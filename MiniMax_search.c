@@ -156,20 +156,22 @@ double MiniMax(double gr[graph_size][4], int path[1][2], double minmax_cost[size
 
 	int i, x, y;
 	double value, utilityValue;
-	int mouse_loc_copy[1][2], cat_loc_copy[10][2], cheese_loc_copy[10][2], path_copy[1][2];
+	int mouse_loc_copy[1][2], cat_loc_copy[10][2], path_copy[1][2];//cheese_loc_copy[10][2], 
 
 	// make copies of the game state
 	for(i=0; i<cats; i++) {
 		cat_loc_copy[i][0] = cat_loc[i][0];
 		cat_loc_copy[i][1] = cat_loc[i][1];
 	}
-	for(i=0; i<cheeses; i++) {
+	/*for(i=0; i<cheeses; i++) {
 		cheese_loc_copy[i][0] = cheese_loc[i][0];
 		cheese_loc_copy[i][1] = cheese_loc[i][1];
-	}
+	}*/
 	mouse_loc_copy[0][0] = mouse_loc[0][0];
 	mouse_loc_copy[0][1] = mouse_loc[0][1];
 
+	//if (depth == 2)
+	//printf("agent id: %d\n", agentId);
 	if (agentId == 0) {
 		x = mouse_loc[0][0];
 		y = mouse_loc[0][1];
@@ -177,29 +179,29 @@ double MiniMax(double gr[graph_size][4], int path[1][2], double minmax_cost[size
 		x = cat_loc[agentId-1][0];
 		y = cat_loc[agentId-1][1];
 	}
-	//value = -9999999999999;
 
 	// Check if maximum search depth has been reached
-	if(depth == maxDepth)
-	{
-		return utility(cat_loc_copy, cheese_loc_copy, mouse_loc_copy, cats, cheeses, depth, gr);
+	if(depth == maxDepth) {
+		double util = utility(cat_loc_copy, cheese_loc, mouse_loc_copy, cats, cheeses, depth, gr);
+		minmax_cost[x][y] = util;
+		return util;
 	}
-
 	// Check if the game is in a terminal state
 	for(i=0; i<cats; i++) {
-		if(cat_loc[i][0] == mouse_loc[0][0] && cat_loc[i][1] == mouse_loc[0][1])
-		{
-		return utility(cat_loc_copy, cheese_loc_copy, mouse_loc_copy, cats, cheeses, depth, gr);
+		if(cat_loc[i][0] == mouse_loc[0][0] && cat_loc[i][1] == mouse_loc[0][1]) {
+			double util = utility(cat_loc_copy, cheese_loc, mouse_loc_copy, cats, cheeses, depth, gr);
+			minmax_cost[x][y] = util;
+			return util;
 		}
 	}
-	for(i=0; i<cheeses; i++)
-	{
-		if(cheese_loc[i][0] == mouse_loc[0][0] && cheese_loc[i][1] == mouse_loc[0][1])
-		{
-		return utility(cat_loc_copy, cheese_loc_copy, mouse_loc_copy, cats, cheeses, depth, gr);
+	for(i=0; i<cheeses; i++) {
+		if(cheese_loc[i][0] == mouse_loc[0][0] && cheese_loc[i][1] == mouse_loc[0][1]) {
+			double util = utility(cat_loc_copy, cheese_loc, mouse_loc_copy, cats, cheeses, depth, gr);
+			minmax_cost[x][y] = util;
+			return util;
 		}
 	}
-	// Recursively call MiniMax for each child node for mouse
+	// Recursively call MiniMax for each child node
 	double child_value[4];
 	int move[4][2];
 	move[0][0] = x; move[0][1] = y-1;
@@ -212,13 +214,13 @@ double MiniMax(double gr[graph_size][4], int path[1][2], double minmax_cost[size
 			if (agentId == 0) {
 				mouse_loc_copy[0][0] = move[i][0];
 				mouse_loc_copy[0][1] = move[i][1];
-				child_value[i] = MiniMax(gr, path_copy, minmax_cost, cat_loc_copy, cats, cheese_loc_copy, cheeses, mouse_loc_copy, mode, utility, (agentId+1)%(cats+1), depth+1, maxDepth, alpha, beta);
+				child_value[i] = MiniMax(gr, path_copy, minmax_cost, cat_loc_copy, cats, cheese_loc, cheeses, mouse_loc_copy, mode, utility, (agentId+1)%(cats+1), depth+1, maxDepth, alpha, beta);
 				minmax_cost[move[i][0]][move[i][1]] = child_value[i];
-				printf("%f\n", child_value[i]);
+				//printf("%f\n", child_value[i]);
 			} else {
 				cat_loc_copy[agentId-1][0] = move[i][0];
 				cat_loc_copy[agentId-1][1] = move[i][1];
-				child_value[i] = MiniMax(gr, path_copy, minmax_cost, cat_loc_copy, cats, cheese_loc_copy, cheeses, mouse_loc_copy, mode, utility, (agentId+1)%(cats+1), depth+1, maxDepth, alpha, beta);
+				child_value[i] = MiniMax(gr, path_copy, minmax_cost, cat_loc_copy, cats, cheese_loc, cheeses, mouse_loc_copy, mode, utility, (agentId+1)%(cats+1), depth+1, maxDepth, alpha, beta);
 			}
 		} else {
 			if (agentId == 0) {
@@ -232,14 +234,14 @@ double MiniMax(double gr[graph_size][4], int path[1][2], double minmax_cost[size
 	int minmax_index = 0;
 	if (agentId == 0) {
 		for (i=0; i<4; i++) {
-			if (child_value[i] > minmax) {
+			if (child_value[i] >= minmax) {
 				minmax = child_value[i];
 				minmax_index = i;
 			}
 		}
 	} else {
 		for (i=0; i<4; i++) {
-			if (child_value[i] < minmax) {
+			if (child_value[i] <= minmax) {
 				minmax = child_value[i];
 				minmax_index = i;
 			}
@@ -272,7 +274,7 @@ double utility(int cat_loc[10][2], int cheese_loc[10][2], int mouse_loc[1][2], i
 
 		These arguments are as described in A1. Do have a look at your solution!
  */
-
+//return 1.0;
   int value;
   int min_cheese_dist = 150;
   int dist_curr_cheese;
