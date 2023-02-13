@@ -158,7 +158,7 @@ double MiniMax(double gr[graph_size][4], int path[1][2], double minmax_cost[size
 
 	int i, x, y, newX, newY, nextAgentId;
 	double value, utilityValue;
-	int mouse_loc_copy[1][2], cat_loc_copy[10][2], cheese_loc_copy[10][2];
+	int mouse_loc_copy[1][2], cat_loc_copy[10][2], cheese_loc_copy[10][2], path_copy[1][2];
 
 	// make copies of the game state
 	for(i=0; i<cats; i++)
@@ -174,9 +174,14 @@ double MiniMax(double gr[graph_size][4], int path[1][2], double minmax_cost[size
 	mouse_loc_copy[0][0] = mouse_loc[0][0];
 	mouse_loc_copy[0][1] = mouse_loc[0][1];
 
-	x = mouse_loc[0][0];
-	y = mouse_loc[0][1];
-	value = -9999999999999;
+	if (agentId == 0) {
+		x = mouse_loc[0][0];
+		y = mouse_loc[0][1];
+	} else {
+		x = cat_loc[agentId-1][0];
+		y = cat_loc[agentId-1][1];
+	}
+	//value = -9999999999999;
 
 	// Check if maximum search depth has been reached
 	if(depth == maxDepth)
@@ -185,8 +190,7 @@ double MiniMax(double gr[graph_size][4], int path[1][2], double minmax_cost[size
 	}
 
 	// Check if the game is in a terminal state
-	for(i=0; i<cats; i++)
-	{
+	for(i=0; i<cats; i++) {
 		if(cat_loc[i][0] == mouse_loc[0][0] && cat_loc[i][1] == mouse_loc[0][1])
 		{
 		return utility(cat_loc_copy, cheese_loc_copy, mouse_loc_copy, cats, cheeses, depth, gr);
@@ -199,52 +203,55 @@ double MiniMax(double gr[graph_size][4], int path[1][2], double minmax_cost[size
 		return utility(cat_loc_copy, cheese_loc_copy, mouse_loc_copy, cats, cheeses, depth, gr);
 		}
 	}
-
-  // Recursively call MiniMax for each child node
-	for(i=0; i<4; i++)
-	{
-		if(gr[x*size_Y+y][i] != -1)
-		{
-		newX = x + dx[i];
-		
-
+	// Recursively call MiniMax for each child node for mouse
+	//if (agentId == 0) {
+	double child_value[4];
+	int move[4][2];
+	move[0][0] = x; move[0][1] = y-1;
+	move[1][0] = x+1; move[1][1] = y;
+	move[2][0] = x; move[2][1] = y+1;
+	move[3][0] = x-1; move[3][1] = y;
+	for (i=0; i<4; i++) {
+		int curr_index = x + (y * size_X);
+		if (gr[curr_index][i] == 1) {
+			if (agentId == 0) {
+				mouse_loc_copy[0][0] = move[i][0];
+				mouse_loc_copy[0][1] = move[i][1];
+				child_value[i] = MiniMax(gr, path_copy, minmax_cost, cat_loc_copy, cats, cheese_loc_copy, cheeses, mouse_loc_copy, mode, utility, (agentId+1)%cats+1, depth+1, maxDepth, alpha, beta);
+			} else {
+				cat_loc_copy[agentId-1][0] = move[i][0];
+				cat_loc_copy[agentId-1][1] = move[i][1];
+				child_value[i] = MiniMax(gr, path_copy, minmax_cost, cat_loc_copy, cats, cheese_loc_copy, cheeses, mouse_loc_copy, mode, utility, (agentId+1)%cats+1, depth+1, maxDepth, alpha, beta);
+			}
+		} else {
+			if (agentId == 0) {
+				child_value[i] = -99999999;
+			} else {
+				child_value[i] = 99999999;
+			}
 		}
 	}
-	/ Continue search at deeper levels
-  for (int i = 0; i < 4; i++) {
-    int next_loc[1][2];
-    next_loc[0][0] = curr_loc[0][0] + move[i][0];
-    next_loc[0][1] = curr_loc[0][1] + move[i][1];
-
-    if (valid_move(next_loc[0][0], next_loc[0][1])) {
-      int next_cat_loc[10][2];
-      int next_cheese_loc[10][2];
-      int next_mouse_loc[1][2];
-
-      // Copy current locations to next locations
-      for (int j = 0; j < cats; j++) {
-        next_cat_loc[j][0] = cat_loc[j][0];
-        next_cat_loc[j][1] = cat_loc[j][1];
-      }
-      for (int j = 0; j < cheeses; j++) {
-        next_cheese_loc[j][0] = cheese_loc[j][0];
-        next_cheese_loc[j][1] = cheese_loc[j][1];
-      }
-      next_mouse_loc[0][0] = next_loc[0][0];
-      next_mouse_loc[0][1] = next_loc[0][1];
-
-      // Update location for current player
-      if (agentId == 1) {
-        next_cat_loc[idx][0] = next_loc[0][0];
-        next_cat_loc[idx][1] = next_loc[0][1];
-      } else {
-        next_mouse_loc[0][0] = next_loc[0][0];
-        next_mouse_loc[0][1] = next_loc[0][1];
-      }
-
-      // Recursively call MiniMax function
-      double next_value = MiniMax(gr, path, minmax_cost, next_cat_loc, cats, next_cheese_loc, cheeses, next_mouse_loc, mode, utility, next_agentId, depth + 1, maxDepth, alpha, beta);
-
+	//}
+	double minmax = child_value[0];
+	int minmax_index = 0;
+	if (agentId == 0) {
+		for (i=0; i<4; i++) {
+			if (child_value[i] > minmax) {
+				minmax = child_value[i];
+				minmax_index = i;
+			}
+		}
+	} else {
+		for (i=0; i<4; i++) {
+			if (child_value[i] < minmax) {
+				minmax = child_value[i];
+				minmax_index = i;
+			}
+		}
+	}
+	path[0][0]=move[minmax_index][0];
+ 	path[0][1]=move[minmax_index][1];
+	return minmax;
 }
 
 double utility(int cat_loc[10][2], int cheese_loc[10][2], int mouse_loc[1][2], int cats, int cheeses, int depth, double gr[graph_size][4])
