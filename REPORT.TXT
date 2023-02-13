@@ -4,17 +4,17 @@ Assignment 2 - MiniMax and Game Trees
 
 ________________________________________________
 
-Student Name 1 (last, first):
+Student Name 1 (last, first): Rui, Haowen
 
-Student Name 2 (last, first):
+Student Name 2 (last, first): Alexander, Andreas
 
-Student number 1:
+Student number 1: 1005843688
 
-Student number 2:
+Student number 2: 1005800368
 
-UTORid 1:
+UTORid 1: ruihaowe
 
-UTORid 2:
+UTORid 2: alexa376
 
 READ THIS AND SIGN YOUR NAME AT THE END:
 
@@ -22,7 +22,7 @@ READ THIS AND SIGN YOUR NAME AT THE END:
 honesty and plaguarism. All work submitted as part
 of this assignment is my own.
 
-	Signed: _(student 1 name here)__	_(student 2 name here)__
+	Signed: _Haowen Rui__	_Andreas Alexander__
 
 
 (-5 marks for failing to provide the identifying
@@ -42,20 +42,56 @@ but explain carefully when needed.
      search depth (number of turns) on the chances of the mouse
      winning the game. 
 
+     Increasing the search depth will lead to a more definitive path
+     and more accurate results for the utility function, which will 
+     increase the chances of the mouse winning the game. 
+
 3 .- (1 marks) What situations will cause your mouse to lose?
      can these be fixed either with the utility function, or
      by changing the search depth? if so, how?
+
+     when the cat is spawned in between the mouse and the cheese, 
+     there is a higher chance that the mouse will bump into the 
+     cat, which will cause it to lose. Our utility function currently
+     takes into account the location of the cat, and will exponentially
+     decrement the utility the closer the cat gets to the mouse, so 
+     the mouse will avoid the cat. 
+
+     Another situation in which the cat spawns really close to the mouse 
+     might cause the mouse to panic, only avoid the cat and completely ignore 
+     eating the cheese. To fix this, we have to find a perfect balance of
+     our utility function, so the mouse will still take the cheese into 
+     consideration while avoiding the cat. 
 
 4 .- (1 marks) Compare cats with smartness=.8 against cats with
      smartness=1 - which are harder for your mouse to beat?
      why do you think that is?
 
+     we believe the amount of randomness is 1 - smartness_of_the_cat, 
+     meaning the cat with smartness=1 moves toward the mouse at all times while
+     the cat with smartness=.8 has a .2 chance of making a random move. We see 
+     this behavior when testing our code, and it makes the smartness=1 cat
+     harder to beat since it is always making correct moves to get closer to 
+     the mouse.
+
 5 .- (1 marks) Can the mouse be made unbeatable by having an
      optimal utility function?
+
+     I believe the mouse can be made unbeatable because the cat and the mouse
+     moves at the same pace. A mouse that weighs a high importance on the 
+     location of the cat may be literally unbeatable in this game, as long it 
+     avoid all the cats and constantly try to move towards the cheese, it will 
+     have a chance to eventually eat the cheese. 
 
 6 .- (2 bonus marks) Could a human playing the game in place
       of the mouse do better than your code? (yes, no, and
       a reasonable explanation of why)
+     
+     yes, if the human makes only the optimal moves, it is possible to beat
+     my code at the game. Sometimes, my mouse will bounce around in one place
+     until a cat comes close enough. This bouncing around wastes valuable time,
+     and a human player making perfectly logical moves can surpass my algorithm
+     by going straight to the cheese. 
 
 _____________________________________________________
 
@@ -63,14 +99,14 @@ Mark with an 'x' where appropriate. If something is only
 working partially, briefly describe what works, what
 doesn't work, or what problems exist.
 	
-	Complete/Working	Partial		Not done
+	              Complete/Working	Partial		Not done
 
 Utility
- function
+ function                x
 
-MiniMax
+MiniMax                  x
 
-Alpha/Beta
+Alpha/Beta               x
  pruning
 _____________________________________________________
 
