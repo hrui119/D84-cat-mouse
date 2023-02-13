@@ -154,20 +154,16 @@ double MiniMax(double gr[graph_size][4], int path[1][2], double minmax_cost[size
  *
  ********************************************************************************************************/
 
- // Stub so that the code compiles/runs - This will be removed and replaced by your code!
-
-	int i, x, y, newX, newY, nextAgentId;
+	int i, x, y;
 	double value, utilityValue;
 	int mouse_loc_copy[1][2], cat_loc_copy[10][2], cheese_loc_copy[10][2], path_copy[1][2];
 
 	// make copies of the game state
-	for(i=0; i<cats; i++)
-	{
+	for(i=0; i<cats; i++) {
 		cat_loc_copy[i][0] = cat_loc[i][0];
 		cat_loc_copy[i][1] = cat_loc[i][1];
 	}
-	for(i=0; i<cheeses; i++)
-	{
+	for(i=0; i<cheeses; i++) {
 		cheese_loc_copy[i][0] = cheese_loc[i][0];
 		cheese_loc_copy[i][1] = cheese_loc[i][1];
 	}
@@ -232,7 +228,6 @@ double MiniMax(double gr[graph_size][4], int path[1][2], double minmax_cost[size
 			}
 		}
 	}
-	//}
 	double minmax = child_value[0];
 	int minmax_index = 0;
 	if (agentId == 0) {
@@ -299,7 +294,7 @@ double utility(int cat_loc[10][2], int cheese_loc[10][2], int mouse_loc[1][2], i
       closest_cat[0][0] = cat_loc[i][0]; closest_cat[0][1] = cat_loc[i][1];
     }
   }
-  value = - min_cheese_dist;//min_cat_dist
+  value = min_cat_dist - min_cheese_dist;
   
   int cat_ind = -1* pow((5/6), min_cat_dist - 20);
   int cheese_ind = int(1.5*pow((5/6), min_cheese_dist - 20))+1;
