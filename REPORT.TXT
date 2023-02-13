@@ -80,8 +80,8 @@ but explain carefully when needed.
      I believe the mouse can be made unbeatable because the cat and the mouse
      moves at the same pace. A mouse that weighs a high importance on the 
      location of the cat may be literally unbeatable in this game, as long it 
-     avoid all the cats and constantly try to move towards the cheese, it will 
-     have a chance to eventually eat the cheese. 
+     avoid all the cats, don't get cornered, and constantly try to move towards
+     the cheese, it will have a chance to eventually eat the cheese. 
 
 6 .- (2 bonus marks) Could a human playing the game in place
       of the mouse do better than your code? (yes, no, and
