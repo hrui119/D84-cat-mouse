@@ -204,7 +204,6 @@ double MiniMax(double gr[graph_size][4], int path[1][2], double minmax_cost[size
 		}
 	}
 	// Recursively call MiniMax for each child node for mouse
-	//if (agentId == 0) {
 	double child_value[4];
 	int move[4][2];
 	move[0][0] = x; move[0][1] = y-1;
@@ -217,11 +216,13 @@ double MiniMax(double gr[graph_size][4], int path[1][2], double minmax_cost[size
 			if (agentId == 0) {
 				mouse_loc_copy[0][0] = move[i][0];
 				mouse_loc_copy[0][1] = move[i][1];
-				child_value[i] = MiniMax(gr, path_copy, minmax_cost, cat_loc_copy, cats, cheese_loc_copy, cheeses, mouse_loc_copy, mode, utility, (agentId+1)%cats+1, depth+1, maxDepth, alpha, beta);
+				child_value[i] = MiniMax(gr, path_copy, minmax_cost, cat_loc_copy, cats, cheese_loc_copy, cheeses, mouse_loc_copy, mode, utility, (agentId+1)%(cats+1), depth+1, maxDepth, alpha, beta);
+				minmax_cost[move[i][0]][move[i][1]] = child_value[i];
+				printf("%f\n", child_value[i]);
 			} else {
 				cat_loc_copy[agentId-1][0] = move[i][0];
 				cat_loc_copy[agentId-1][1] = move[i][1];
-				child_value[i] = MiniMax(gr, path_copy, minmax_cost, cat_loc_copy, cats, cheese_loc_copy, cheeses, mouse_loc_copy, mode, utility, (agentId+1)%cats+1, depth+1, maxDepth, alpha, beta);
+				child_value[i] = MiniMax(gr, path_copy, minmax_cost, cat_loc_copy, cats, cheese_loc_copy, cheeses, mouse_loc_copy, mode, utility, (agentId+1)%(cats+1), depth+1, maxDepth, alpha, beta);
 			}
 		} else {
 			if (agentId == 0) {
@@ -298,13 +299,13 @@ double utility(int cat_loc[10][2], int cheese_loc[10][2], int mouse_loc[1][2], i
       closest_cat[0][0] = cat_loc[i][0]; closest_cat[0][1] = cat_loc[i][1];
     }
   }
-  value = min_cat_dist - min_cheese_dist;
+  value = - min_cheese_dist;//min_cat_dist
   
   int cat_ind = -1* pow((5/6), min_cat_dist - 20);
-  int cheese_ind = int(1.5*pow((5/6), min_ch_dist - 20))+1;
+  int cheese_ind = int(1.5*pow((5/6), min_cheese_dist - 20))+1;
   //value = cheese_ind + cat_ind;
   int cat_to_cheese = abs(closest_cat[0][0]-closest_ch[0][0]) + abs(closest_cat[0][1]-closest_ch[0][1]);
-  int cat_to_ch_ind = pow((5/6), cat_to_cheesed - 20);
+  int cat_to_ch_ind = pow((5/6), cat_to_cheese - 20);
   //idea use search to get length of path and compare it to distance from cat to cheese?
   //idea use UCS to cheese and also UCS from cat to mouse then compare the paths and also take into acc cat to cheese dist
   return value;
