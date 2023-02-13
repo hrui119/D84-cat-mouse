@@ -26,6 +26,63 @@
 #include "MiniMax_search.h"
 //#include <limits.h>
 
+typedef struct Node {
+	/**
+	 * a node struct for the linked list
+	*/
+    int x;
+    int y;
+    double cost;
+	struct Node* next;
+} Node;
+
+Node* newNode(int x, int y, int cost){
+	/**
+	 * returns a new node given the input params
+	 * input: 
+	 * x: x coordinate
+	 * y: y coordinate
+	 * cost: cost of going to the x and y coordinate
+	*/
+	Node* n = (Node*) malloc(sizeof(Node)); 
+    n->x = x;
+	n->y = y;
+    n->cost = cost;
+    n->next = NULL;
+    return n;
+}
+
+bool isEmpty(Node** head){
+	/**
+	 * returns if the linked list is empty
+	*/
+    return (*head) == NULL;
+}
+int location_to_int(int x, int y) {
+	/**
+	 * translate coordinates to location for graph
+	 * input: 
+	 * x: x coordinate
+	 * y: y coordinate
+	*/
+	return x + (y * size_X);
+}
+
+bool in_end_indices(int *end_indices, int length, int curr_loca) {
+	/**
+	 * see if the current location is in the end indices
+	 * input: 
+	 * end_indices: a list of end indices
+	 * length: the length of the former list
+	 * curr_loca: the current location
+	*/
+	for (int i = 0; i < length; i++) {
+		if(end_indices[i] == curr_loca) {
+			return true;
+		}
+	}
+	return false;
+}
 double MiniMax(double gr[graph_size][4], int path[1][2], double minmax_cost[size_X][size_Y], int cat_loc[10][2], int cats, int cheese_loc[10][2], int cheeses, int mouse_loc[1][2], int mode, double (*utility)(int cat_loc[10][2], int cheese_loc[10][2], int mouse_loc[1][2], int cats, int cheeses, int depth, double gr[graph_size][4]), int agentId, int depth, int maxDepth, double alpha, double beta)
 {
  /*
@@ -156,22 +213,20 @@ double MiniMax(double gr[graph_size][4], int path[1][2], double minmax_cost[size
 
 	int i, x, y;
 	double value, utilityValue;
-	int mouse_loc_copy[1][2], cat_loc_copy[10][2], path_copy[1][2];//cheese_loc_copy[10][2], 
+	int mouse_loc_copy[1][2], cat_loc_copy[10][2], cheese_loc_copy[10][2], path_copy[1][2];
 
 	// make copies of the game state
 	for(i=0; i<cats; i++) {
 		cat_loc_copy[i][0] = cat_loc[i][0];
 		cat_loc_copy[i][1] = cat_loc[i][1];
 	}
-	/*for(i=0; i<cheeses; i++) {
+	for(i=0; i<cheeses; i++) {
 		cheese_loc_copy[i][0] = cheese_loc[i][0];
 		cheese_loc_copy[i][1] = cheese_loc[i][1];
-	}*/
+	}
 	mouse_loc_copy[0][0] = mouse_loc[0][0];
 	mouse_loc_copy[0][1] = mouse_loc[0][1];
 
-	//if (depth == 2)
-	//printf("agent id: %d\n", agentId);
 	if (agentId == 0) {
 		x = mouse_loc[0][0];
 		y = mouse_loc[0][1];
@@ -179,29 +234,29 @@ double MiniMax(double gr[graph_size][4], int path[1][2], double minmax_cost[size
 		x = cat_loc[agentId-1][0];
 		y = cat_loc[agentId-1][1];
 	}
+	//value = -9999999999999;
 
 	// Check if maximum search depth has been reached
-	if(depth == maxDepth) {
-		double util = utility(cat_loc_copy, cheese_loc, mouse_loc_copy, cats, cheeses, depth, gr);
-		minmax_cost[x][y] = util;
-		return util;
+	if(depth == maxDepth)
+	{
+		return utility(cat_loc_copy, cheese_loc_copy, mouse_loc_copy, cats, cheeses, depth, gr);
 	}
+
 	// Check if the game is in a terminal state
 	for(i=0; i<cats; i++) {
-		if(cat_loc[i][0] == mouse_loc[0][0] && cat_loc[i][1] == mouse_loc[0][1]) {
-			double util = utility(cat_loc_copy, cheese_loc, mouse_loc_copy, cats, cheeses, depth, gr);
-			minmax_cost[x][y] = util;
-			return util;
+		if(cat_loc[i][0] == mouse_loc[0][0] && cat_loc[i][1] == mouse_loc[0][1])
+		{
+		return utility(cat_loc_copy, cheese_loc_copy, mouse_loc_copy, cats, cheeses, depth, gr);
 		}
 	}
-	for(i=0; i<cheeses; i++) {
-		if(cheese_loc[i][0] == mouse_loc[0][0] && cheese_loc[i][1] == mouse_loc[0][1]) {
-			double util = utility(cat_loc_copy, cheese_loc, mouse_loc_copy, cats, cheeses, depth, gr);
-			minmax_cost[x][y] = util;
-			return util;
+	for(i=0; i<cheeses; i++)
+	{
+		if(cheese_loc[i][0] == mouse_loc[0][0] && cheese_loc[i][1] == mouse_loc[0][1])
+		{
+		return utility(cat_loc_copy, cheese_loc_copy, mouse_loc_copy, cats, cheeses, depth, gr);
 		}
 	}
-	// Recursively call MiniMax for each child node
+	// Recursively call MiniMax for each child node for mouse
 	double child_value[4];
 	int move[4][2];
 	move[0][0] = x; move[0][1] = y-1;
@@ -214,13 +269,13 @@ double MiniMax(double gr[graph_size][4], int path[1][2], double minmax_cost[size
 			if (agentId == 0) {
 				mouse_loc_copy[0][0] = move[i][0];
 				mouse_loc_copy[0][1] = move[i][1];
-				child_value[i] = MiniMax(gr, path_copy, minmax_cost, cat_loc_copy, cats, cheese_loc, cheeses, mouse_loc_copy, mode, utility, (agentId+1)%(cats+1), depth+1, maxDepth, alpha, beta);
+				child_value[i] = MiniMax(gr, path_copy, minmax_cost, cat_loc_copy, cats, cheese_loc_copy, cheeses, mouse_loc_copy, mode, utility, (agentId+1)%(cats+1), depth+1, maxDepth, alpha, beta);
 				minmax_cost[move[i][0]][move[i][1]] = child_value[i];
 				//printf("%f\n", child_value[i]);
 			} else {
 				cat_loc_copy[agentId-1][0] = move[i][0];
 				cat_loc_copy[agentId-1][1] = move[i][1];
-				child_value[i] = MiniMax(gr, path_copy, minmax_cost, cat_loc_copy, cats, cheese_loc, cheeses, mouse_loc_copy, mode, utility, (agentId+1)%(cats+1), depth+1, maxDepth, alpha, beta);
+				child_value[i] = MiniMax(gr, path_copy, minmax_cost, cat_loc_copy, cats, cheese_loc_copy, cheeses, mouse_loc_copy, mode, utility, (agentId+1)%(cats+1), depth+1, maxDepth, alpha, beta);
 			}
 		} else {
 			if (agentId == 0) {
@@ -230,18 +285,18 @@ double MiniMax(double gr[graph_size][4], int path[1][2], double minmax_cost[size
 			}
 		}
 	}
-	double minmax = child_value[0];
+	int minmax = child_value[0];
 	int minmax_index = 0;
 	if (agentId == 0) {
 		for (i=0; i<4; i++) {
-			if (child_value[i] >= minmax) {
+			if (child_value[i] > minmax) {
 				minmax = child_value[i];
 				minmax_index = i;
 			}
 		}
 	} else {
 		for (i=0; i<4; i++) {
-			if (child_value[i] <= minmax) {
+			if (child_value[i] < minmax) {
 				minmax = child_value[i];
 				minmax_index = i;
 			}
@@ -274,7 +329,7 @@ double utility(int cat_loc[10][2], int cheese_loc[10][2], int mouse_loc[1][2], i
 
 		These arguments are as described in A1. Do have a look at your solution!
  */
-//return 1.0;
+
   int value;
   int min_cheese_dist = 150;
   int dist_curr_cheese;
@@ -296,18 +351,192 @@ double utility(int cat_loc[10][2], int cheese_loc[10][2], int mouse_loc[1][2], i
       closest_cat[0][0] = cat_loc[i][0]; closest_cat[0][1] = cat_loc[i][1];
     }
   }
-  value = min_cat_dist - min_cheese_dist;
+  printf("CAT DIST: %d\n", min_cat_dist);
+  printf("CHEESE DIST: %d\n", min_cheese_dist);
+  value =  0 - min_cheese_dist;
   
-  int cat_ind = -1* pow((5/6), min_cat_dist - 20);
+  int cat_ind = -1 * pow((5/6), min_cat_dist - 20);
   int cheese_ind = int(1.5*pow((5/6), min_cheese_dist - 20))+1;
   //value = cheese_ind + cat_ind;
   int cat_to_cheese = abs(closest_cat[0][0]-closest_ch[0][0]) + abs(closest_cat[0][1]-closest_ch[0][1]);
   int cat_to_ch_ind = pow((5/6), cat_to_cheese - 20);
   //idea use search to get length of path and compare it to distance from cat to cheese?
   //idea use UCS to cheese and also UCS from cat to mouse then compare the paths and also take into acc cat to cheese dist
-  return value;
+  int path[graph_size][2];
+  int visit_order[size_X][size_Y];
+  
+  int leng = UCS(gr, path, visit_order, cat_loc, cats, cheese_loc, cheeses, mouse_loc);
+  printf("PATH LENGTH: %d \n", leng);
+  if(min_cheese_dist == 0){
+  return 100;
+  }
+  if (min_cheese_dist < 7){
+  return 0 - min_cheese_dist;
+  }
+  return 0- leng;
 }
 
+void dequeue(Node** head){
+	/**
+	 * pop the first node in the linked list and free space
+	 * input: 
+	 * head: head of the linked list
+	*/
+    Node* temp = *head;
+    (*head) = (*head)->next;
+    free(temp);
+}
+
+void enqueue(Node** head, int x, int y, int cost){
+	/**
+	 * enqueue the new node into the linked list head
+	 * input: 
+	 * head: the head of the linked list
+	 * x: x coordinate
+	 * y: y coordinate
+	 * cost: cost of going to the x and y coordinate
+	*/
+    Node* start = *head;
+    Node* temp = newNode(x, y, cost);
+	if ((*head) == NULL){
+		*head = temp;
+	} else {
+		if ((*head)->cost >= cost){
+			temp->next = *head; 
+			(*head) = temp; 
+		} else {
+			while (start->next != NULL && start->next->cost <= cost){
+				start = start->next;
+			}
+			temp->next = start->next; 
+			start->next = temp; 
+		}
+	}
+    
+}
+int UCS(double gr[graph_size][4], int path[graph_size][2], int visit_order[size_X][size_Y], 
+			int cat_loc[10][2], int cats, int cheese_loc[10][2], int cheeses, int mouse_loc[1][2])
+{
+		int x, y, cost, curr_index, path_idx = 1, path_index = 0;
+		int start_x = mouse_loc[0][0], start_y = mouse_loc[0][1];
+		int start_index = location_to_int(start_x, start_y);
+		int end_indices[cheeses];
+		for (int i = 0; i < cheeses; i++){
+			end_indices[i] = location_to_int(cheese_loc[i][0], cheese_loc[i][1]);
+		}
+		for (int i = 0; i < cats; i++) {
+			//printf("cat: %d, %d", cat_loc[i][0], cat_loc[i][1]);
+		}
+		// Initialize 2D arrays to keep track of visited locations and path
+		int visited[size_X][size_Y] = {0};
+		int parent[graph_size] = {-1};
+		// Initialize queue and add starting location to it
+		Node* head = newNode(mouse_loc[0][0], mouse_loc[0][1], 0); 
+		while (!isEmpty(&head)) {
+			x = head->x;
+			y = head->y;
+			cost = head->cost;
+			dequeue(&head);
+			//printf("dequeued: %d\n", cost);
+			// Check if current location has been visited before
+			if (visited[x][y]) {
+			    continue;
+			}
+			visited[x][y] = 1;
+			visit_order[x][y] = path_idx;
+			path_idx++;
+			curr_index = location_to_int(x, y);
+			// Check if we have reached the end node
+			if (in_end_indices(end_indices, cheeses, curr_index)){
+				// Backtrack to construct the path
+				int curr = curr_index;
+				while (curr != start_index) {
+					int x = curr % size_X;
+					int y = curr / size_X;
+					path[path_index][0] = x;
+					path[path_index][1] = y;
+					path_index++;
+					curr = parent[curr];
+				}
+				// Add the start node to the path
+				path[path_index][0] = start_x;
+				path[path_index][1] = start_y;
+				// reverse the path
+				int tempX, tempY;
+				//printf("path index: %d\n", path_index);
+				for (int i = 0; i < path_index-i; i++){
+					tempX = path[path_index-i][0], tempY = path[path_index-i][1];
+					path[path_index-i][0] = path[i][0];
+					path[path_index-i][1] = path[i][1];
+					path[i][0] = tempX;
+					path[i][1] = tempY;
+				}
+				// print the path
+				int i = 0;
+				while (path[i][0]!=-1) {
+					//printf("path: %d, %d\n", path[i][0], path[i][1]);
+					i++;
+				}
+				break;
+			} // if we haven't reached the end node
+			else {
+				// Check all 4 neighbors (top, right, bottom, left)
+				if (gr[curr_index][0] && !visited[x][y-1]) {
+					cost = Hcost(x, y, cat_loc, cheese_loc, mouse_loc, cats, cheeses, gr);
+					enqueue(&head, x, y-1, cost);
+					parent[location_to_int(x, y-1)] = curr_index;
+					//printf("top enqueued: %d\n", cost);
+				}
+				if (gr[curr_index][1] && !visited[x+1][y]) {
+					cost = Hcost(x, y, cat_loc, cheese_loc, mouse_loc, cats, cheeses, gr);
+					enqueue(&head, x+1, y, cost);
+					parent[location_to_int(x+1, y)] = curr_index;
+					//printf("right enqueued: %d\n", cost);
+				}
+				if (gr[curr_index][2] && !visited[x][y+1]) {
+					cost = Hcost(x, y, cat_loc, cheese_loc, mouse_loc, cats, cheeses, gr);
+					enqueue(&head, x, y+1, cost);
+					parent[location_to_int(x, y+1)] = curr_index;
+					//printf("bottom enqueued: %d\n", cost);
+				}
+				if (gr[curr_index][3] && !visited[x-1][y]) {
+					cost = Hcost(x, y, cat_loc, cheese_loc, mouse_loc, cats, cheeses, gr);
+					enqueue(&head, x-1, y, cost);
+					parent[location_to_int(x-1, y)] = curr_index;
+					//printf("left enqueued: %d\n", cost);
+				}
+			}
+		}
+		return path_index;
+}
+int Hcost(int x, int y, int cat_loc[10][2], int cheese_loc[10][2], int mouse_loc[1][2], int cats, int cheeses, double gr[graph_size][4])
+{
+/*
+   This function computes and returns the heuristic cost for location x,y.
+   As discussed in lecture, this means estimating the cost of getting from x,y to the goal.
+   The goal is cheese. Which cheese is up to you.
+   Whatever you code here, your heuristic must be admissible.
+   Input arguments:
+       x,y - Location for which this function will compute a heuristic search cost
+       cat_loc - Cat locations
+       cheese_loc - Cheese locations
+       mouse_loc - Mouse location
+       cats - # of cats
+       cheeses - # of cheeses
+       gr - The graph's adjacency list for the maze
+       These arguments are as described in the search() function above
+*/
+	int min_cheese_distance = graph_size;
+	for (int i = 0; i < cheeses; i++) {
+    	int cheese_x = cheese_loc[i][0];
+    	int cheese_y = cheese_loc[i][1];
+    	int distance = abs(x - cheese_x) + abs(y - cheese_y);
+    	if(min_cheese_distance > distance){
+        	min_cheese_distance = distance;
+        }
+	}
+	return min_cheese_distance;
+}
 int checkForTerminal(int mouse_loc[1][2],int cat_loc[10][2],int cheese_loc[10][2],int cats,int cheeses)
 {
  /* 
