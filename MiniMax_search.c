@@ -285,25 +285,30 @@ double MiniMax(double gr[graph_size][4], int path[1][2], double minmax_cost[size
 			}
 		}
 	}
-	int minmax = child_value[0];
+	double minmax = child_value[0];
 	int minmax_index = 0;
 	if (agentId == 0) {
 		for (i=0; i<4; i++) {
 			if (child_value[i] > minmax) {
 				minmax = child_value[i];
 				minmax_index = i;
+				//printf("Mouse Child value %d Depth %d\n", minmax, depth);
 			}
 		}
+		if (depth==0){
+		printf("Mouse FOURTH CHILD val %f,%f,%f,%f\n", child_value[0], child_value[1], child_value[2], child_value[3]);}
 	} else {
 		for (i=0; i<4; i++) {
 			if (child_value[i] < minmax) {
 				minmax = child_value[i];
 				minmax_index = i;
+				//printf("Cat child value %f Depth %d\n", minmax, depth);
 			}
 		}
 	}
 	path[0][0]=move[minmax_index][0];
  	path[0][1]=move[minmax_index][1];
+ 	//printf("Agent ID: %d MINIMAX IS %f AT DEPTH %d\n AT CURRENT LOC x:%d, y:%d, CHEESE:(%d,%d)", agentId,minmax, depth,x,y,cheese_loc[0][0], cheese_loc[0][1]);
 	return minmax;
 }
 
@@ -347,12 +352,12 @@ double utility(int cat_loc[10][2], int cheese_loc[10][2], int mouse_loc[1][2], i
   for(int i = 0; i < cats; i++){
     dist_curr_cat = abs(cat_loc[i][0] - mouse_loc[0][0]) + abs(cat_loc[i][1] - mouse_loc[0][1]);
     if(dist_curr_cat < min_cat_dist){
-      min_cat_dist = dist_curr_cheese;
+      min_cat_dist = dist_curr_cat;
       closest_cat[0][0] = cat_loc[i][0]; closest_cat[0][1] = cat_loc[i][1];
     }
   }
-  printf("CAT DIST: %d\n", min_cat_dist);
-  printf("CHEESE DIST: %d\n", min_cheese_dist);
+  //printf("CAT DIST: %d\n", min_cat_dist);
+  //printf("CHEESE DIST: %d\n", min_cheese_dist);
   value =  0 - min_cheese_dist;
   
   int cat_ind = -1 * pow((5/6), min_cat_dist - 20);
@@ -366,14 +371,10 @@ double utility(int cat_loc[10][2], int cheese_loc[10][2], int mouse_loc[1][2], i
   int visit_order[size_X][size_Y];
   
   int leng = UCS(gr, path, visit_order, cat_loc, cats, cheese_loc, cheeses, mouse_loc);
-  printf("PATH LENGTH: %d \n", leng);
-  if(min_cheese_dist == 0){
-  return 100;
-  }
-  if (min_cheese_dist < 7){
-  return 0 - min_cheese_dist;
-  }
-  return 0- leng;
+  //printf("PATH LENGTH: %d \n", leng);
+  
+  
+  return 0- leng - depth;
 }
 
 void dequeue(Node** head){
