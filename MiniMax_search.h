@@ -36,6 +36,8 @@ double utility(int cat_loc[10][2], int cheese_loc[10][2], int mouse_loc[1][2], i
 int checkForTerminal(int mouse_loc[1][2],int cat_loc[10][2],int cheese_loc[10][2],int cats,int cheeses);
 // If you need to add any function prototypes yourself, you can do so *below* this line.
 
+int Hcost(int x, int y, int cat_loc[10][2], int cheese_loc[10][2], int mouse_loc[1][2], int cats, int cheeses, double gr[graph_size][4]);
 
+int UCS(double gr[graph_size][4], int path[graph_size][2], int visit_order[size_X][size_Y], 
+			int cat_loc[10][2], int cats, int cheese_loc[10][2], int cheeses, int mouse_loc[1][2]);
 #endif
-
