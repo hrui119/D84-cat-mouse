@@ -277,7 +277,37 @@ double utility(int cat_loc[10][2], int cheese_loc[10][2], int mouse_loc[1][2], i
 		These arguments are as described in A1. Do have a look at your solution!
  */
 
- return(1);   // <--- Obviously, this will be replaced by your computer utilities
+  int value;
+  int min_cheese_dist = 150;
+  int dist_curr_cheese;
+  int min_cat_dist = 150;
+  int dist_curr_cat;
+  int closest_ch[1][2];
+  int closest_cat[1][2];
+  for(int i = 0; i < cheeses; i++){
+    dist_curr_cheese = abs(cheese_loc[i][0] - mouse_loc[0][0]) + abs(cheese_loc[i][1] - mouse_loc[0][1]);
+    if(dist_curr_cheese < min_cheese_dist){
+      min_cheese_dist = dist_curr_cheese;
+      closest_ch[0][0] = cheese_loc[i][0]; closest_ch[0][1] = cheese_loc[i][1];
+    }
+  }
+  for(int i = 0; i < cats; i++){
+    dist_curr_cat = abs(cat_loc[i][0] - mouse_loc[0][0]) + abs(cat_loc[i][1] - mouse_loc[0][1]);
+    if(dist_curr_cat < min_cat_dist){
+      min_cat_dist = dist_curr_cheese;
+      closest_cat[0][0] = cat_loc[i][0]; closest_cat[0][1] = cat_loc[i][1];
+    }
+  }
+  value = min_cat_dist - min_cheese_dist;
+  
+  int cat_ind = -1* pow((5/6), min_cat_dist - 20);
+  int cheese_ind = int(1.5*pow((5/6), min_ch_dist - 20))+1;
+  //value = cheese_ind + cat_ind;
+  int cat_to_cheese = abs(closest_cat[0][0]-closest_ch[0][0]) + abs(closest_cat[0][1]-closest_ch[0][1]);
+  int cat_to_ch_ind = pow((5/6), cat_to_cheesed - 20);
+  //idea use search to get length of path and compare it to distance from cat to cheese?
+  //idea use UCS to cheese and also UCS from cat to mouse then compare the paths and also take into acc cat to cheese dist
+  return value;
 }
 
 int checkForTerminal(int mouse_loc[1][2],int cat_loc[10][2],int cheese_loc[10][2],int cats,int cheeses)
