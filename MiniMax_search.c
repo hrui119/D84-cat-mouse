@@ -159,6 +159,62 @@ double MiniMax(double gr[graph_size][4], int path[1][2], double minmax_cost[size
  path[0][1]=mouse_loc[0][1];
 
  return(0.0);
+	#include "MiniMax_search.h"
+#include <limits.h>
+
+double MiniMax(double gr[graph_size][4], int path[1][2], double minmax_cost[size_X][size_Y], int cat_loc[10][2], int cats, int cheese_loc[10][2], int cheeses, int mouse_loc[1][2], int mode, double (*utility)(int cat_loc[10][2], int cheese_loc[10][2], int mouse_loc[1][2], int cats, int cheeses, int depth, double gr[graph_size][4]), int agentId, int depth, int maxDepth, double alpha, double beta)
+{
+  int i, x, y, newX, newY, nextAgentId;
+  double value, utilityValue;
+  int mouse_loc_copy[1][2], cat_loc_copy[10][2], cheese_loc_copy[10][2];
+
+  // make copies of the game state
+  for(i=0; i<cats; i++)
+  {
+    cat_loc_copy[i][0] = cat_loc[i][0];
+    cat_loc_copy[i][1] = cat_loc[i][1];
+  }
+  for(i=0; i<cheeses; i++)
+  {
+    cheese_loc_copy[i][0] = cheese_loc[i][0];
+    cheese_loc_copy[i][1] = cheese_loc[i][1];
+  }
+  mouse_loc_copy[0][0] = mouse_loc[0][0];
+  mouse_loc_copy[0][1] = mouse_loc[0][1];
+
+  x = mouse_loc[0][0];
+  y = mouse_loc[0][1];
+  value = -DBL_MAX;
+
+  // Check if maximum search depth has been reached
+  if(depth == maxDepth)
+  {
+    return utility(cat_loc_copy, cheese_loc_copy, mouse_loc_copy, cats, cheeses, depth, gr);
+  }
+
+  // Check if the game is in a terminal state
+  for(i=0; i<cats; i++)
+  {
+    if(cat_loc[i][0] == mouse_loc[0][0] && cat_loc[i][1] == mouse_loc[0][1])
+    {
+      return utility(cat_loc_copy, cheese_loc_copy, mouse_loc_copy, cats, cheeses, depth, gr);
+    }
+  }
+  for(i=0; i<cheeses; i++)
+  {
+    if(cheese_loc[i][0] == mouse_loc[0][0] && cheese_loc[i][1] == mouse_loc[0][1])
+    {
+      return utility(cat_loc_copy, cheese_loc_copy, mouse_loc_copy, cats, cheeses, depth, gr);
+    }
+  }
+
+  // Recursively call MiniMax for each child node
+  for(i=0; i<4; i++)
+  {
+    if(gr[x*size_Y+y][i] != -1)
+    {
+      newX = x + dx[i];
+
 }
 
 double utility(int cat_loc[10][2], int cheese_loc[10][2], int mouse_loc[1][2], int cats, int cheeses, int depth, double gr[graph_size][4])
