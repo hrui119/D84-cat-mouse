@@ -41,17 +41,15 @@ but explain carefully when needed.
      So the utility function should give a score to the current 
      game state. For this, we took into account factors like 
      the length of the optimal path to the closest cheese using
-     our UCS algorithm (we only consider this when the mouse is 
-     within some fixed manhattan distance to the cheese), the 
-     current depth of the search (meaning we will prefer lesser 
-     depth search), cat index (which is based on the distance to 
-     the most dangerous cat), and cheese index (which is based on 
-     the most gettable cheese). All these factors are what makes 
-     the game scorable for us to determine how good or bad the 
-     state is for the mouse since the objective of the game is 
-     to avoid the cats and get to the cheese with the minimum 
-     distance possible. For our factors, we score positively when 
-     the most dangerous cat is far from the mouse,
+     our UCS algorithm, the current depth of the search (meaning
+     we will prefer lesser depth search), cat index (which is 
+     based on the distance to the most dangerous cat), and cheese
+     index (which is based on the most gettable cheese). All these
+     factors are what makes the game scorable for us to determine 
+     how good or bad the state is for the mouse since the objective
+     of the game is to avoid the cats and get to the cheese with
+     the minimum distance possible. For our factors, we score 
+     positively when the most dangerous cat is far from the mouse,
      and when the most reachable cheese is close to the mouse. 
      For these indexes, we used a power function to emphasize the
      danger of the cat getting closer (where the closer it gets 
