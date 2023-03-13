@@ -56,7 +56,7 @@ void QLearn_update(int s, int a, double r, int s_new, double *QTable)
   //Q(s,a) += alpha (reward + gamma(Q(new state, max action of new state) - Q(s,a)))
      
   double max_next_s = max(*(QTable+(4*s_new)), *(QTable+(4*s_new)+1), *(QTable+(4*s_new)+2),*(QTable+(4*s_new)+3));
-  *(Q_table+(4*s)+a) = alpha*(r + lambda(max_next_s-*(Q_table+(4*s)+a)));
+  *(QTable+(4*s)+a) = alpha*(r + lambda(max_next_s-*(QTable+(4*s)+a)));
   return;
   
 }
@@ -151,10 +151,10 @@ int QLearn_action(double gr[max_graph_size][4], int mouse_pos[1][2], int cats[5]
   int M = 10;
   for (int j = 1;  j <= k; j++){
     double p_rand = 1-(j/k);
-    for int(i = 1; i <= M; i++){
+    for (int i = 1; i <= M; i++){
       double c = (double)rand() / (double)((unsigned)RAND_MAX + 1);
 
-      if c <= pct{
+      if (c <= pct){
         int random_act = rand()%4;
         int curr_index = mouse_pos[0][1] + (mouse_pos[0][1] * size_X);
         while(gr[curr_index][random_act] !=1){
@@ -167,28 +167,29 @@ int QLearn_action(double gr[max_graph_size][4], int mouse_pos[1][2], int cats[5]
         a = pi[init_s];
       }
       double reward = QLearn_reward(gr, mouse_pos, cats, cheeses, size_X, graph_size);
+      int next_s = -1;
       //we have experience tuple = (s, a, r, next s) from the above
       if(a == 0){
-        int next_s = (mouse_pos[0]+((mouse_pos[1]-1)*size_X)) + ((cats[0][0]+(cats[0][1]*size_X))*graph_size) + ((cheeses[0][0]+(cheeses[0][1]*size_X))*graph_size*graph_size);
+        int next_s = (mouse_pos[0][0]+((mouse_pos[0][1]-1)*size_X)) + ((cats[0][0]+(cats[0][1]*size_X))*graph_size) + ((cheeses[0][0]+(cheeses[0][1]*size_X))*graph_size*graph_size);
       }
       else if(a == 1){
-        int next_s = (mouse_pos[0]+1 +((mouse_pos[1])*size_X)) + ((cats[0][0]+(cats[0][1]*size_X))*graph_size) + ((cheeses[0][0]+(cheeses[0][1]*size_X))*graph_size*graph_size);
+        int next_s = (mouse_pos[0][0]+1 +((mouse_pos[0][1])*size_X)) + ((cats[0][0]+(cats[0][1]*size_X))*graph_size) + ((cheeses[0][0]+(cheeses[0][1]*size_X))*graph_size*graph_size);
       }
       else if(a == 2){
-        int next_s = (mouse_pos[0]+((mouse_pos[1]+1)*size_X)) + ((cats[0][0]+(cats[0][1]*size_X))*graph_size) + ((cheeses[0][0]+(cheeses[0][1]*size_X))*graph_size*graph_size);
+        int next_s = (mouse_pos[0][0]+((mouse_pos[0][1]+1)*size_X)) + ((cats[0][0]+(cats[0][1]*size_X))*graph_size) + ((cheeses[0][0]+(cheeses[0][1]*size_X))*graph_size*graph_size);
       }
       else if(a == 3){
-        int next_s = (mouse_pos[0]-1+((mouse_pos[1])*size_X)) + ((cats[0][0]+(cats[0][1]*size_X))*graph_size) + ((cheeses[0][0]+(cheeses[0][1]*size_X))*graph_size*graph_size);
+        int next_s = (mouse_pos[0][0]-1+((mouse_pos[0][1])*size_X)) + ((cats[0][0]+(cats[0][1]*size_X))*graph_size) + ((cheeses[0][0]+(cheeses[0][1]*size_X))*graph_size*graph_size);
       }
       //call QLearn_update to update Q(s,a)
-      QLearn_update(init_s, a, rreward, next_s, Q_table)
+      QLearn_update(init_s, a, reward, next_s, QTable);
     }
     int curr_largest = 0;
     int largest_i = -1;
     for(int y = 0; y <= 3; y++){
-      if(curr_largest < *(Q_table+(4*init_s)+y)){
+      if(curr_largest < *(QTable+(4*init_s)+y)){
         largest_i = y;
-        curr_largest = *(Q_table+(4*init_s)+y);
+        curr_largest = *(QTable+(4*init_s)+y);
       }
     }
     pi[init_s] = largest_i;
@@ -223,7 +224,7 @@ double QLearn_reward(double gr[max_graph_size][4], int mouse_pos[1][2], int cats
       min_cat_dist = mouse_dist;
     }
   }
-  if min_cat_dist == 0{
+  if (min_cat_dist == 0){
     return -100; 
   }
   int min_cheese_dist = 1000;
@@ -233,10 +234,10 @@ double QLearn_reward(double gr[max_graph_size][4], int mouse_pos[1][2], int cats
       min_cheese_dist = mouse_dist;
     }
   }
-  if min_cheese_dist == 0{
+  if (min_cheese_dist == 0){
     return 100;
   }
-  int reward = 2*size_x - min_cheese_dist + min_cat_dist;
+  int reward = 2*size_X - min_cheese_dist + min_cat_dist;
   return(reward);		// <--- of course, you will change this as well!     
 }
 
