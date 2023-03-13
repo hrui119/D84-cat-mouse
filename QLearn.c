@@ -143,9 +143,21 @@ int QLearn_action(double gr[max_graph_size][4], int mouse_pos[1][2], int cats[5]
   //Q_table initialized to all 0s
   int states = (size_X+(size_X*size_X)) + ((size_X+(size_X*size_X))*graph_size) + ((size_X+(size_X*size_X))*graph_size*graph_size);
   int pi[states];
-  //initialize all pi(s) to be 0
+  //initialize all pi(s) to be first valid move
   for (int x = 0; x < states; x++){
-    pi[x] = 0;
+    int ind = (get_x(x, graph_size, size_X) + (get_y(x, graph_size, size_X) * graph_size)); 
+    if(gr[ind][0] != 0){
+      pi[x] = 0;
+    } 
+    else if(gr[ind][1] != 0){
+      pi[x] = 1;
+    } 
+    else if(gr[ind][2] != 0){
+      pi[x] = 2;
+    } 
+    else if(gr[ind][3] != 0){
+      pi[x] = 3;
+    } 
   }
   int init_s = (mouse_pos[0][0]+(mouse_pos[0][1]*size_X)) + ((cats[0][0]+(cats[0][1]*size_X))*graph_size) + ((cheeses[0][0]+(cheeses[0][1]*size_X))*graph_size*graph_size);
   // alpha defined in QLearn.h
