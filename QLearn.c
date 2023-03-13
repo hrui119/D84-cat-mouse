@@ -248,7 +248,7 @@ double QLearn_reward(double gr[max_graph_size][4], int mouse_pos[1][2], int cats
    * TO DO: Complete this function
    ***********************************************************************************************/ 
   int min_cat_dist = 10000;
-  for(int i = 0; i < 5; i++){
+  for(int i = 0; i < 1; i++){
     int mouse_dist = abs(cats[i][0]-mouse_pos[0][0]) + abs(cats[i][1]-mouse_pos[0][1]);
     if (mouse_dist < min_cat_dist){
       min_cat_dist = mouse_dist;
@@ -258,7 +258,7 @@ double QLearn_reward(double gr[max_graph_size][4], int mouse_pos[1][2], int cats
     return -100; 
   }
   int min_cheese_dist = 1000;
-  for(int i = 0; i < 5; i++){
+  for(int i = 0; i < 1; i++){
     int mouse_dist = abs(cheeses[i][0]-mouse_pos[0][0]) + abs(cheeses[i][1]-mouse_pos[0][1]);
     if (mouse_dist < min_cheese_dist){
       min_cheese_dist = mouse_dist;
