@@ -60,7 +60,7 @@ void QLearn_update(int s, int a, double r, int s_new, double *QTable)
         max_next_s =  *(QTable+(4*s_new) + i);
       } 
   }
-  *(QTable+(4*s)+a) = alpha*(r + lambda(max_next_s-*(QTable+(4*s)+a)));
+  *(QTable+(4*s)+a) = alpha*(r + lambda * (max_next_s-*(QTable+(4*s)+a)));
   return;
   
 }
