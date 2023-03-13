@@ -54,8 +54,12 @@ void QLearn_update(int s, int a, double r, int s_new, double *QTable)
    ***********************************************************************************************/
   
   //Q(s,a) += alpha (reward + gamma(Q(new state, max action of new state) - Q(s,a)))
-     
-  double max_next_s = std::max(*(QTable+(4*s_new)), *(QTable+(4*s_new)+1), *(QTable+(4*s_new)+2),*(QTable+(4*s_new)+3));
+   double max_next_s = -1;
+  for (int i == 0; i < 4; i++){
+      if(max_next_s < *(QTable+(4*s_new) + i)){
+        max_next_s =  *(QTable+(4*s_new) + i);
+      } 
+  }
   *(QTable+(4*s)+a) = alpha*(r + lambda(max_next_s-*(QTable+(4*s)+a)));
   return;
   
