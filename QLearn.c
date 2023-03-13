@@ -201,7 +201,21 @@ int QLearn_action(double gr[max_graph_size][4], int mouse_pos[1][2], int cats[5]
   return(pi[init_s]);		// <--- of course, you will change this!
   
 }
-
+int get_x(int s, int graph_size, int size_X){
+  int mn = floor(s/(graph_size*graph_size));
+  int kl = floor((s-(mn*graph_size*graph_size))/graph_size);
+  int ij = s-(mn*graph_size*graph_size)-(kl*graph_size);
+  int i = ij%size_X;
+  return i;
+}
+int get_y(int s, int graph_size, int size_X){
+  int mn = floor(s/(graph_size*graph_size));
+  int kl = floor((s-(mn*graph_size*graph_size))/graph_size);
+  int ij = s-(mn*graph_size*graph_size)-(kl*graph_size);
+  int i = ij%size_X;
+  int j = (ij-i)/size_X;
+  return j;
+}
 double QLearn_reward(double gr[max_graph_size][4], int mouse_pos[1][2], int cats[5][2], int cheeses[5][2], int size_X, int graph_size)
 {
   /*
