@@ -53,7 +53,11 @@ void QLearn_update(int s, int a, double r, int s_new, double *QTable)
    * TO DO: Complete this function
    ***********************************************************************************************/
   
-  Q(s,a) += alpha (reward + gamma(Q(new state, max action of new state) - Q(s,a)))
+  //Q(s,a) += alpha (reward + gamma(Q(new state, max action of new state) - Q(s,a)))
+     
+  double max_next_s = max(*(QTable+(4*s_new)), *(QTable+(4*s_new)+1), *(QTable+(4*s_new)+2),*(QTable+(4*s_new)+3));
+  *(Q_table+(4*s)+a) = alpha*(r + lambda(max_next_s-*(Q_table+(4*s)+a)));
+  return;
   
 }
 
@@ -176,9 +180,8 @@ int QLearn_action(double gr[max_graph_size][4], int mouse_pos[1][2], int cats[5]
       else if(a == 3){
         int next_s = (mouse_pos[0]-1+((mouse_pos[1])*size_X)) + ((cats[0][0]+(cats[0][1]*size_X))*graph_size) + ((cheeses[0][0]+(cheeses[0][1]*size_X))*graph_size*graph_size);
       }
-      call QLearn_update to update Q(s,a)
-      double max_next_s = max(*(Q_table+(4*next_s)), *(Q_table+(4*next_s)+1), *(Q_table+(4*next_s)+2),*(Q_table+(4*next_s)+3));
-      *(Q_table+(4*init_s)+a) = alpha*(reward + lambda(max_next_s-*(Q_table+(4*init_s)+a)));
+      //call QLearn_update to update Q(s,a)
+      QLearn_update(init_s, a, rreward, next_s, Q_table)
     }
     int curr_largest = 0;
     int largest_i = -1;
