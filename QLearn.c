@@ -30,6 +30,8 @@
 */
 
 #include "QLearn.h"
+#include <stdio.h>
+#include <stdlib.h>
 
 void QLearn_update(int s, int a, double r, int s_new, double *QTable)
 {
@@ -130,28 +132,65 @@ int QLearn_action(double gr[max_graph_size][4], int mouse_pos[1][2], int cats[5]
   /***********************************************************************************************
    * TO DO: Complete this function
    ***********************************************************************************************/  
-  initialize QTable to all 0
-  create a Pi(s) table = random action for all s (maybe all 0)?
-  determine initial state (mouse pos)?
-  set alpha to some value (small)
+  //Q_table initialized to all 0s
+  int states = (size_X+(size_X*size_X)) + ((size_X+(size_X*size_X))*graph_size) + ((size_X+(size_X*size_X))*graph_size*graph_size);
+  int pi[states];
+  //initialize all pi(s) to be 0
+  for (int x = 0; x < states; x++){
+    pi[x] = 0;
+  }
+  int init_s = (mouse_pos[0]+(mouse_pos[1]*size_X)) + ((cats[0][0]+(cats[0][1]*size_X))*graph_size) + ((cheeses[0][0]+(cheeses[0][1]*size_X))*graph_size*graph_size);
+  // alpha defined in QLearn.h
 
-  for j in 1 to k{
-    p_rand = 1-(j/K)
-    for i in 1 to M{
-      get random number 0 <= c <= 1
-      if c <= p_rand{
-        choose random action from s 
+  int k = 100;
+  int a = 0;
+  int M = 10;
+  for (int j = 1;  j <= k; j++){
+    double p_rand = 1-(j/k);
+    for int(i = 1; i <= M; i++){
+      double c = (double)rand() / (double)((unsigned)RAND_MAX + 1);
+
+      if c <= pct{
+        int random_act = rand()%4;
+        int curr_index = mouse_pos[0][1] + (mouse_pos[0][1] * size_X);
+        while(gr[curr_index][random_act] !=1){
+          random_act = rand()%4;
+          curr_index = mouse_pos[0][1] + (mouse_pos[0][1] * size_X);
+        }
+        a = random_act;
       }
       else{
-        choose a = current best action in Pi(s)
+        a = pi[init_s];
       }
-
-      we have experience tuple = (s, a, r, new s) from the above
+      double reward = QLearn_reward(gr, mouse_pos, cats, cheeses, size_X, graph_size);
+      //we have experience tuple = (s, a, r, next s) from the above
+      if(a == 0){
+        int next_s = (mouse_pos[0]+((mouse_pos[1]-1)*size_X)) + ((cats[0][0]+(cats[0][1]*size_X))*graph_size) + ((cheeses[0][0]+(cheeses[0][1]*size_X))*graph_size*graph_size);
+      }
+      else if(a == 1){
+        int next_s = (mouse_pos[0]+1 +((mouse_pos[1])*size_X)) + ((cats[0][0]+(cats[0][1]*size_X))*graph_size) + ((cheeses[0][0]+(cheeses[0][1]*size_X))*graph_size*graph_size);
+      }
+      else if(a == 2){
+        int next_s = (mouse_pos[0]+((mouse_pos[1]+1)*size_X)) + ((cats[0][0]+(cats[0][1]*size_X))*graph_size) + ((cheeses[0][0]+(cheeses[0][1]*size_X))*graph_size*graph_size);
+      }
+      else if(a == 3){
+        int next_s = (mouse_pos[0]-1+((mouse_pos[1])*size_X)) + ((cats[0][0]+(cats[0][1]*size_X))*graph_size) + ((cheeses[0][0]+(cheeses[0][1]*size_X))*graph_size*graph_size);
+      }
       call QLearn_update to update Q(s,a)
+      double max_next_s = max(*(Q_table+(4*next_s)), *(Q_table+(4*next_s)+1), *(Q_table+(4*next_s)+2),*(Q_table+(4*next_s)+3));
+      *(Q_table+(4*init_s)+a) = alpha*(reward + lambda(max_next_s-*(Q_table+(4*init_s)+a)));
     }
-    Pi(s) = argmax, Q(s,a)
+    int curr_largest = 0;
+    int largest_i = -1;
+    for(int y = 0; y <= 3; y++){
+      if(curr_largest < *(Q_table+(4*init_s)+y)){
+        largest_i = y;
+        curr_largest = *(Q_table+(4*init_s)+y);
+      }
+    }
+    pi[init_s] = largest_i;
   }
-  return(0);		// <--- of course, you will change this!
+  return(pi[init_s]);		// <--- of course, you will change this!
   
 }
 
