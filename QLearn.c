@@ -55,7 +55,7 @@ void QLearn_update(int s, int a, double r, int s_new, double *QTable)
   
   //Q(s,a) += alpha (reward + gamma(Q(new state, max action of new state) - Q(s,a)))
      
-  double max_next_s = max(*(QTable+(4*s_new)), *(QTable+(4*s_new)+1), *(QTable+(4*s_new)+2),*(QTable+(4*s_new)+3));
+  double max_next_s = std::max(*(QTable+(4*s_new)), *(QTable+(4*s_new)+1), *(QTable+(4*s_new)+2),*(QTable+(4*s_new)+3));
   *(QTable+(4*s)+a) = alpha*(r + lambda(max_next_s-*(QTable+(4*s)+a)));
   return;
   
@@ -143,7 +143,7 @@ int QLearn_action(double gr[max_graph_size][4], int mouse_pos[1][2], int cats[5]
   for (int x = 0; x < states; x++){
     pi[x] = 0;
   }
-  int init_s = (mouse_pos[0]+(mouse_pos[1]*size_X)) + ((cats[0][0]+(cats[0][1]*size_X))*graph_size) + ((cheeses[0][0]+(cheeses[0][1]*size_X))*graph_size*graph_size);
+  int init_s = (mouse_pos[0][0]+(mouse_pos[0][1]*size_X)) + ((cats[0][0]+(cats[0][1]*size_X))*graph_size) + ((cheeses[0][0]+(cheeses[0][1]*size_X))*graph_size*graph_size);
   // alpha defined in QLearn.h
 
   int k = 100;
@@ -220,7 +220,7 @@ double QLearn_reward(double gr[max_graph_size][4], int mouse_pos[1][2], int cats
   int min_cat_dist = 10000;
   for(int i = 0; i < 5; i++){
     int mouse_dist = abs(cats[i][0]-mouse_pos[0][0]) + abs(cats[i][1]-mouse_pos[0][1]);
-    if mouse_dist < min_cat_dist{
+    if (mouse_dist < min_cat_dist){
       min_cat_dist = mouse_dist;
     }
   }
@@ -230,7 +230,7 @@ double QLearn_reward(double gr[max_graph_size][4], int mouse_pos[1][2], int cats
   int min_cheese_dist = 1000;
   for(int i = 0; i < 5; i++){
     int mouse_dist = abs(cheeses[i][0]-mouse_pos[0][0]) + abs(cheeses[i][1]-mouse_pos[0][1]);
-    if mouse_dist < min_cheese_dist{
+    if (mouse_dist < min_cheese_dist){
       min_cheese_dist = mouse_dist;
     }
   }
