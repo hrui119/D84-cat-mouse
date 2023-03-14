@@ -271,7 +271,8 @@ double QLearn_reward(double gr[max_graph_size][4], int mouse_pos[1][2], int cats
   return(reward);		// <--- of course, you will change this as well!     
 }
 
-void feat_QLearn_update(double gr[max_graph_size][4],double weights[25], double reward, int mouse_pos[1][2], int cats[5][2], int cheeses[5][2], int size_X, int graph_size)
+
+void feat_QLearn_update(double gr[max_graph_size][4],double weights[25], double reward, int mouse_pos[1][2], int new_pos[1][2], int cats[5][2], int cheeses[5][2], int size_X, int graph_size)
 {
   /*
     This function performs the Q-learning adjustment to all the weights associated with your
@@ -280,13 +281,16 @@ void feat_QLearn_update(double gr[max_graph_size][4],double weights[25], double 
     associated with this action (this is called immediately after the mouse makes a move,
     so implicit in this is the mouse having selected some action)
     
-    Your code must then evaluate the update and apply it to the weights in the weight array.    
+    Your code must then evaluate the update and apply it to the weights in the weight array.
    */
-  
-   /***********************************************************************************************
-   * TO DO: Complete this function
-   ***********************************************************************************************/        
-      
+  for (int i = 0; i < numFeatures; i++) {
+    double feat_orig[25], feat_after[25];
+    evaluateFeatures(gr, feat_orig, mouse_pos, cats, cheeses, size_X, graph_size);
+    evaluateFeatures(gr, feat_after, new_pos, cats, cheeses, size_X, graph_size);
+    double qs = Qsa(weights, feat_orig);
+    double qs_aft = Qsa(weights, feat_after);
+    weights[i] += alpha * (reward + (lambda * qs_aft) - qs) * feat_orig[i];
+  }
 }
 
 int feat_QLearn_action(double gr[max_graph_size][4],double weights[25], int mouse_pos[1][2], int cats[5][2], int cheeses[5][2], double pct, int size_X, int graph_size)
@@ -304,12 +308,62 @@ int feat_QLearn_action(double gr[max_graph_size][4],double weights[25], int mous
     As before, the mouse must never select an action that causes it to walk through walls or leave
     the maze.    
    */
-
-  /***********************************************************************************************
-   * TO DO: Complete this function
-   ***********************************************************************************************/        
-
-  return(0);		// <--- replace this while you're at it!
+  srand((unsigned) time(NULL));
+  double w;
+  int K = 100;
+  double features[25];
+  // init variables
+  evaluateFeatures(gr, features, mouse_pos, cats, cheeses, size_X, graph_size);
+  for (int i = 0; i < numFeatures; i++) {
+    w = ((double) (rand()%(100+1-0)-50))/100;
+    while (w == 0) {
+      w = ((double) (rand()%(100+1-0)-50))/100;
+    }
+    weights[i] = w;
+  }
+  // actual refining
+  for (int j = 0; j < K; j++) {
+    //double p_random = 1 / (j / K);
+    for (int i = 0; i < 4; i++) {
+      double c = ((double) rand()) / (double)((unsigned) RAND_MAX + 1);
+      int curr_index = mouse_pos[0][0] + (mouse_pos[0][1] * size_X);
+      int a;
+      double maxU;
+      if (c > pct) {
+        a = (rand()%(4));
+        while (gr[curr_index][a] != 1) {
+          a = (rand()%(4));
+        }
+      } else {
+        // optimal action
+        maxQsa(gr, weights, mouse_pos, cats, cheeses, size_X, graph_size, &maxU, &a);
+      }
+      int new_pos[1][2];
+      if (a == 0) {
+        new_pos[0][0] = mouse_pos[0][0];
+        new_pos[0][1] = mouse_pos[0][1] - 1;
+        evaluateFeatures(gr, features, new_pos, cats, cheeses, size_X, graph_size);
+      } else if (a == 1) {
+        new_pos[0][0] = mouse_pos[0][0] + 1;
+        new_pos[0][1] = mouse_pos[0][1];
+        evaluateFeatures(gr, features, new_pos, cats, cheeses, size_X, graph_size);
+      } else if (a == 2) {
+        new_pos[0][0] = mouse_pos[0][0];
+        new_pos[0][1] = mouse_pos[0][1] + 1;
+        evaluateFeatures(gr, features, new_pos, cats, cheeses, size_X, graph_size);
+      } else if (a == 3) {
+        new_pos[0][0] = mouse_pos[0][0] - 1;
+        new_pos[0][1] = mouse_pos[0][1];
+        evaluateFeatures(gr, features, new_pos, cats, cheeses, size_X, graph_size);
+      }
+      double reward = QLearn_reward(gr, new_pos, cats, cheeses, size_X, graph_size);
+      feat_QLearn_update(gr, weights, reward, mouse_pos, new_pos, cats, cheeses, size_X, graph_size);
+    }
+  }
+  double maxU;
+  int maxA;
+  maxQsa(gr, weights, mouse_pos, cats, cheeses, size_X, graph_size, &maxU, &maxA);
+  return maxA;
 
 }
 
@@ -328,12 +382,61 @@ void evaluateFeatures(double gr[max_graph_size][4],double features[25], int mous
    
    You can have up to 5 cats and up to 5 cheese chunks, and array entries for the remaining cats/cheese
    will have a value of -1 - check this when evaluating your features!
-  */
 
-   /***********************************************************************************************
-   * TO DO: Complete this function
-   ***********************************************************************************************/      
-   
+   m distance to cat descending
+   m distance to cheese descending
+  */
+  int dist[5];
+  // cat dist descending
+  for (int i = 0; i < 5; i++) {
+    if (cats[i][0] != -1) {
+      int d = abs(mouse_pos[0][0] - cats[i][0]) + abs(mouse_pos[0][1] - cats[i][1]);
+      if (i == 0) {
+        dist[0] = d;
+      } else {
+        // insert
+        int temp = d, temp2;
+        for (int j = 0; j < i; j++) {
+          if (temp > dist[j]) {
+            temp2 = dist[j];
+            dist[j] = temp;
+            temp = dist[j+1];
+            dist[j+1] = temp2;
+          }
+        }
+      }
+    } else {
+      dist[i] = 0;
+    }
+  }
+  for (int i = 0; i < 5; i++) {
+    features[i] = dist[i];
+  }
+  // cheese dist desc
+  for (int i = 0; i < 5; i++) {
+    if (cheeses[i][0] != -1) {
+      int d = abs(mouse_pos[0][0] - cheeses[i][0]) + abs(mouse_pos[0][1] - cheeses[i][1]);
+      if (i == 0) {
+        dist[0] = d;
+      } else {
+        // insert
+        int temp = d, temp2;
+        for (int j = 0; j < i; j++) {
+          if (temp > dist[j]) {
+            temp2 = dist[j];
+            dist[j] = temp;
+            temp = dist[j+1];
+            dist[j+1] = temp2;
+          }
+        }
+      }
+    } else {
+      dist[i] = 0;
+    }
+  }
+  for (int i = 0; i < 5; i++) {
+    features[i+5] = dist[i];
+  }
 }
 
 double Qsa(double weights[25], double features[25])
@@ -341,12 +444,11 @@ double Qsa(double weights[25], double features[25])
   /*
     Compute and return the Qsa value given the input features and current weights
    */
-
-  /***********************************************************************************************
-  * TO DO: Complete this function
-  ***********************************************************************************************/  
-  
-  return(0);		// <--- stub! compute and return the Qsa value
+  double result = 0;
+  for (int i = 0; i < numFeatures; i++) {
+    result += weights[i] * features[i];
+  }
+  return result;
 }
 
 void maxQsa(double gr[max_graph_size][4],double weights[25],int mouse_pos[1][2], int cats[5][2], int cheeses[5][2], int size_X, int graph_size, double *maxU, int *maxA)
@@ -358,19 +460,40 @@ void maxQsa(double gr[max_graph_size][4],double weights[25],int mouse_pos[1][2],
    
    You should make sure the function does not evaluate moves that would make the mouse walk through a
    wall. 
-  */
- 
-   /***********************************************************************************************
-   * TO DO: Complete this function
-   ***********************************************************************************************/  
- 
-  *maxU=0;	// <--- stubs! your code will compute actual values for these two variables!
+  */ 
+
+  *maxU=0;
   *maxA=0;
+  double features[25];
+  int curr_index = mouse_pos[0][0] + (mouse_pos[0][1] * size_X);
+  double max = -100000000000000000;
+  int new_pos[1][2];
+  for (int k = 0; k < 4; k++) {
+    if (k == 0) {
+      new_pos[0][0] = mouse_pos[0][0];
+      new_pos[0][1] = mouse_pos[0][1] - 1;
+      evaluateFeatures(gr, features, new_pos, cats, cheeses, size_X, graph_size);
+    } else if (k == 1) {
+      new_pos[0][0] = mouse_pos[0][0] + 1;
+      new_pos[0][1] = mouse_pos[0][1];
+      evaluateFeatures(gr, features, new_pos, cats, cheeses, size_X, graph_size);
+    } else if (k == 2) {
+      new_pos[0][0] = mouse_pos[0][0];
+      new_pos[0][1] = mouse_pos[0][1] + 1;
+      evaluateFeatures(gr, features, new_pos, cats, cheeses, size_X, graph_size);
+    } else if (k == 3) {
+      new_pos[0][0] = mouse_pos[0][0] - 1;
+      new_pos[0][1] = mouse_pos[0][1];
+      evaluateFeatures(gr, features, new_pos, cats, cheeses, size_X, graph_size);
+    }
+    if (gr[curr_index][k] == 1) {
+      double val = Qsa(weights, features);
+      if (val > max) {
+        *maxA = k;
+        *maxU = val;
+      }
+    }
+  }
   return;
    
 }
-
-/***************************************************************************************************
- *  Add any functions needed to compute your features below 
- *                 ---->  THIS BOX <-----
- * *************************************************************************************************/
