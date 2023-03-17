@@ -1,6 +1,6 @@
 CSC D84 - Artificial Intelligence
 
-Assignment 2 - MiniMax and Game Trees 
+Assignment 3 - Reinforcement Learning - Q Learning
 
 ________________________________________________
 
@@ -8,7 +8,7 @@ Student Name 1 (last, first): Rui, Haowen
 
 Student Name 2 (last, first): Alexander, Andreas
 
-Student number 1: 1005843688
+Student number 1: 1005843688 
 
 Student number 2: 1005800368
 
@@ -32,128 +32,215 @@ ________________________________________________
 Answer the following questions. Be concise and clear
 but explain carefully when needed.
 
-1 .- (4 marks) Explain the design of your utility function.
-     Describe all the factors that influence its value, and
-     how their influence was evaluated and integrated into
-     a single, meaningful value. Convince us that your utility
-     makes sense!
+1 .- (1 mark) Explain your reward function. What game elements
+      are used, and why you think this is a good reward function
+      for this problem.
+      
+      We took into account the cat distance, cheese distance, number
+      of possible moves, and how "centered" is the mouse. The cat distance
+      gives incentive for the mouse to avoid the cat, the cheese distance 
+      is for the mouse to actually try to get the cheese (which is the 
+      point of the game). The number of possible moves increases the
+      chance of the mouse to escape the cat abd eat the cheese, and the
+      "center"ness factor also tells a little bit of how good the game 
+      state is because getting cornered will result in the mouse getting 
+      eaten to be more likely, and same thing with more possible moves.
+
+2 .- These are multiple experiments (once you are sure your 
+     QLearning code is working!) 
+
+     * IMPORTANT! * For each training run, SAVE the Qtable
+     you will re-use the Qtables later.
+
+     (1 mark) # Experiment 1, 10000 training trials, 20 rounds, random seed 1522,
+     # 8x8 grid, cat-smartness .9
+
+     Initial mouse winning rate (first rate obtained when training starts): 0.064547
+
+     Train your mouse, and once trained, run the evaluation and  
+     record the mouse winning rate: 0.701793 (average success rate)
+
+     (1 mark) # Experiment 2, 1000000 training trials, 50 rounds, random seed 1522,
+     # 8x8 grid, cat-smartness .9
+
+     Initial mouse winning rate (first rate obtained when training starts): 0.064525
+
+     Train your mouse, and once trained, run the evaluation and  
+     record the mouse winning rate: 0.870055 (average success rate)
+
+     (1 mark) Would the mouse keep improving and become invincible if
+     you ran, say, 100,000,000 training rounds per batch?    
      
-     So the utility function should give a score to the current 
-     game state. For this, we took into account factors like 
-     the length of the optimal path to the closest cheese using
-     our UCS algorithm, the current depth of the search (meaning
-     we will prefer lesser depth search), cat index (which is 
-     based on the distance to the most dangerous cat), and cheese
-     index (which is based on the most gettable cheese). All these
-     factors are what makes the game scorable for us to determine 
-     how good or bad the state is for the mouse since the objective
-     of the game is to avoid the cats and get to the cheese with
-     the minimum distance possible. For our factors, we score 
-     positively when the most dangerous cat is far from the mouse,
-     and when the most reachable cheese is close to the mouse. 
-     For these indexes, we used a power function to emphasize the
-     danger of the cat getting closer (where the closer it gets 
-     the danger level gets exponentially larger), since the closer
-     the cat is there is exponentially less ways to avoid the cat
-     at a certain point. Same goes with the emphasis when we are
-     close to the cheese. 
+     It will only keep improving to some point of convergence, where it cannot get
+     any better than that for our particular implementation.  
 
-2 .- (1 marks) Ignoring computation time, what is the effect of
-     search depth (number of turns) on the chances of the mouse
-     winning the game. 
+4 .- Using the QTable saved from Experiment 2 (NO re-training!)
 
-     Increasing the search depth will lead to a more definitive path
-     and more accurate results for the utility function, which will 
-     increase the chances of the mouse winning the game. 
+     (1 mark) # Experiment 3 - Run the evaluation on the 8x8 grid, cat-smartness=.9,
+     # but using the random seed 4289 for the game.
+	
+     Mouse Winning Rate: 0.490710 (avg success rate)
 
-3 .- (1 marks) What situations will cause your mouse to lose?
-     can these be fixed either with the utility function, or
-     by changing the search depth? if so, how?
+     (1 mark) # Experiment 4 - Run the evaluation on the 8x8 grid, cat-smartness=.9,
+     # but using the random seed 31415 for the game.
+	
+     Mouse Winning Rate: 0.550624 (avg success rate) 
 
-     when the cat is spawned in between the mouse and the cheese, 
-     there is a higher chance that the mouse will bump into the 
-     cat, which will cause it to lose. Our utility function currently
-     takes into account the location of the cat, and will exponentially
-     decrement the utility the closer the cat gets to the mouse, so 
-     the mouse will avoid the cat. 
+     Average rate for Experiement 3 and Experiment 4: 0.520667 
 
-     Another situation in which the cat spawns really close to the mouse 
-     might cause the mouse to panic, only avoid the cat and completely ignore 
-     eating the cheese. To fix this, we have to find a perfect balance of
-     our utility function, so the mouse will still take the cheese into 
-     consideration while avoiding the cat. 
-
-4 .- (1 marks) Compare cats with smartness=.8 against cats with
-     smartness=1 - which are harder for your mouse to beat?
-     why do you think that is?
-
-     we believe the amount of randomness is 1 - smartness_of_the_cat, 
-     meaning the cat with smartness=1 moves toward the mouse at all times while
-     the cat with smartness=.8 has a .2 chance of making a random move. We see 
-     this behavior when testing our code, and it makes the smartness=1 cat
-     harder to beat since it is always making correct moves to get closer to 
-     the mouse.
-
-5 .- (1 marks) Can the mouse be made unbeatable by having an
-     optimal utility function?
-
-     I believe the mouse can be made unbeatable because the cat and the mouse
-     moves at the same pace. A mouse that weighs a high importance on the 
-     location of the cat may be literally unbeatable in this game, as long it 
-     avoid all the cats, don't get cornered, and constantly try to move towards
-     the cheese, it will have a chance to eventually eat the cheese. 
-
-6 .- (2 bonus marks) Could a human playing the game in place
-      of the mouse do better than your code? (yes, no, and
-      a reasonable explanation of why)
+     (1 mark) Compare with the rate obtained in experiment 2. What is happening here?
      
-     yes, if the human makes only the optimal moves, it is possible to beat
-     my code at the game. Sometimes, my mouse will bounce around in one place
-     until a cat comes close enough. This bouncing around wastes valuable time,
-     and a human player making perfectly logical moves can surpass my algorithm
-     by going straight to the cheese. 
+     We are using the QTable from the training done in experiment 2, from a different 
+     random seed. These results show that the QTable that we get at the end of each 
+     training is mostly useful to the particular seed we got it from, and not so well
+     on other seeds. 
 
+5 .- Understanding the effects of state space on learning ability:
+
+     (1 mark) # Experiment 5 - Train your mouse on the 16x16 grid, using random seed
+     # 1522, 1000000 trials, and 50 training rounds. Cat-smartness=.9
+
+     Initial mouse winning rate (first rate obtained when training starts): 0.030324
+
+     Mouse Winning Rate (from evaluation after training): 0.721532
+
+     (1 mark) Compare the final winning rate with that from Experiment 2, what can
+     you say about the difference in winning rates?
+     
+     It is not as good as the result from Experiment 2, since with a larger state space,
+     there would be more to explore, and with the same training method, it would be
+     expected to get a worse result compared to a smaller state space. There would be 
+     less exploration done and therefore less learning done as well, which is reflected
+     in the worse success rate from the result we got.
+
+6 .- (2 marks) Is standard Q-Learning a rasonable strategy for environments
+     that change constantly? discuss based on the above
+     
+     It is not. As we see from the various experiments, a change in the random seed
+     would cause a particular result from another seed to not perform as well. So a change
+     in the environment is not suitable for standard Q-learning, as we would need to 
+     restart the learning process for a particular environment before we can get a good result.
+     When the map changes (random seed) or the state space grew larger, the QTable we got from
+     a different environment would not do as well, so Q-Learning is not a reasonable strategy
+     for constantly changing environments.
+
+7 .- (2 marks) Explain your feature set for feature-based Q Learning, and
+               explain why and how each feature is expected to contribute
+	       to helping your mouse win
+
+8 .- Carry out the following experiments:
+
+     (1 mark) # Experiment 6: Train your mouse using feature-based Q-Learning, on
+     # the 16x16 grid, one cat, and one cheese, cat-smartness=.9,  
+     # random seed = 1522, and use 1000000 trials and 50 rounds. 
+
+     Initial mouse winning rate (first rate obtained when training starts):
+     
+     Mouse Winning Rate (from evaluation after training):
+
+     Compare this rate against the rate obtained in Experiment #5, what
+     are your conclusions regarding the utility of feature-based
+     Q-Learning?
+
+     (1 mark) # Experiment 7, using the saved weights from Experiment 6 (no
+     # re-training) run the evaluation using random seed 4289, same
+     # 1 cheese, 1 cat, and cat-smartness=.9, 16x16 grid
+
+     Mouse Winning Rate (from evaluation after training):
+
+     (1 mark) # Experiment 8, using the saved weights from Experiment 6 (no
+     # re-training) run the evaluation using random seed 31415, same
+     # 1 cheese, 1 cat, and cat-smartness=.9, 16x16 grid
+
+     Mouse Winning Rate (from evaluation after training):
+
+     (1 mark) Comparing the winning rates from Experiments #7 and #8 against
+     those from Experiment #6, what can you conclude about feature-
+     based Q-Learning in terms of its ability to deal with changes 
+     to the environment?
+     
+9 .- Carry out the following experiments:
+
+     (1 mark) # Experiment 9: Train your mouse using feature-based Q-Learning, on
+     # the 16x16 grid, 2 cats, and 3 cheeses, cat-smartness=.9,  
+     # random seed = 1522, and use 1000000 trials and 50 rounds. 
+
+     Initial mouse winning rate (first rate obtained when training starts):
+     
+     Mouse Winning Rate (from evaluation after training):
+  
+     (1 mark) # Experiment 9: Using the trained weights from Experiment 9, (no
+     # re-training), run the evaluation on the 16x16 grid, 2 cats, 
+     # 3 cheeses, cat-smartness=.9, and random seed 4289
+     
+     Mouse Winning Rate (from evaluation after training):
+
+     (1 mark) # Experiment 9: Using the trained weights from Experiment 9, (no
+     # re-training), run the evaluation on the 32x32 grid, 2 cats, 
+     # 3 cheeses, cat-smartness=.9, and random seed 4289
+     
+     Mouse Winning Rate (from evaluation after training):
+
+     (2 marks) Based on the last 3 experiments, what can you conclude regarding
+     the usefulness and applicability of standard Q-Learning vs. 
+     feature-based Q-learning?
+
+10 . - (2 marks) We obviously can not train an expensive robot by trial and error,
+      How would you implement feature-based Q-learning for a mobile bot so you
+      can take advantage of reinforcement learning but not spend millions on
+      broken robots that keep falling down the stairs?
+      
+      
 _____________________________________________________
 
 Mark with an 'x' where appropriate. If something is only
 working partially, briefly describe what works, what
 doesn't work, or what problems exist.
 	
-	              Complete/Working	Partial		Not done
+			Complete/Working	Partial		Not done
 
-Utility
- function                x
+QLearn 				x
+ update
 
-MiniMax                  x
+Reward				x
+ function
 
-Alpha/Beta               x
- pruning
+Decide				x
+ action
+
+featureEval			x
+
+evaluateQsa			x
+
+maxQsa_prime			x
+
+Qlearn_features			x
+	
+decideAction_features		x
+
 _____________________________________________________
 
 Marking:
 
-(15 marks) Implemented a non-trivial, clever, and
-           effective utility function. It allows the
-           mouse to win the game often. 
+(5 marks) Implemented QLearn update.
 
-(5 marks) Correctly implementing MiniMax. The algorithm
-           should produce the expected behaviour. The
-           mouse should take a reasonable path to the
-           cheese and avoid cats. The cats will try to
-           catch the mouse. Mouse is not easy to catch.
+(3 marks) Implemented a reasonable reward function
 
-(5 marks) Implemented alpha-beta pruning. The algorithm
-           significantly reduces the amount of search
-           while producing identical results as those
-           from standard MiniMax 
+(3 marks)  Implemented the function that chooses the
+           optimal action based on Qtable and
+           maze
 
-(15 marks) Competitive (TA assigned) based on how smart
-           your mouse is (this is related to your
-           utility function above!)
+(10 marks) Implemented a non-trivial, good feature set
+	   and evaluation function
 
-(10 marks) Answers in this report file
+(5 marks) Implemented a working feature-based Q-learning
+	   algorithm
 
+(10 marks) Competitive mouse performance
 
-Total for A2:       / out of 50
+(24 marks) Answers in this report file
 
+(- marks)  Penalty marks
+
+Total for A3:       / out of 60
 
