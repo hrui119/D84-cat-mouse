@@ -160,13 +160,15 @@ int QLearn_action(double gr[max_graph_size][4], int mouse_pos[1][2], int cats[5]
     int index = i + (j * size_X);
     // use the Q-table pct percent of the time, choose randomly otherwise
     int action;
-    if ((double)rand() / (double)RAND_MAX < pct) {
+    double c = (double)rand() / (double)((unsigned)RAND_MAX + 1);
+    
+    if (c <= pct) {
         // choose action with the highest Q-value for the current state
         double maxQ = *(QTable + (4 * state));
         action = 0;
         for (int a = 1; a < 4; a++) {
             double Qval = *(QTable + (4 * state) + a);
-            if (Qval > maxQ) {
+            if ((Qval >= maxQ) && (gr[index][a] != 0) || (gr[index][action] == 0)) {
                 maxQ = Qval;
                 action = a;
             }
@@ -176,7 +178,7 @@ int QLearn_action(double gr[max_graph_size][4], int mouse_pos[1][2], int cats[5]
         int possible_actions[4];
         int num_actions = 0;
         for (int a = 0; a < 4; a++) {
-            if (gr[state][a] != -1) {
+            if (gr[index][a] != 0) {
                 possible_actions[num_actions] = a;
                 num_actions++;
             }
@@ -188,21 +190,23 @@ int QLearn_action(double gr[max_graph_size][4], int mouse_pos[1][2], int cats[5]
     // update mouse position based on the chosen action
     int new_i = i;
     int new_j = j;
-    if (action == 0 && gr[state][0] != -1) {
+    if (action == 0 && gr[index][0] != 0) {
         new_j = j - 1;
-    } else if (action == 1 && gr[state][1] != -1) {
+    } else if (action == 1 && gr[index][1] != 0) {
         new_i = i + 1;
-    } else if (action == 2 && gr[state][2] != -1) {
+    } else if (action == 2 && gr[index][2] != 0) {
         new_j = j + 1;
-    } else if (action == 3 && gr[state][3] != -1) {
+    } else if (action == 3 && gr[index][3] != 0) {
         new_i = i - 1;
     }
 
     // check if the new position is valid (i.e., not a wall)
-    if (gr[state][action] == -1) {
-        printf("Warning: mouse crossed a wall! Action: %d\n", action);
+    if (gr[index][action] == 0) {
+        printf("Warning: mouse crossed a wall! Action: %d, index: %d\n", action, index);
+        printf("QTable val: %f\n", *(QTable + (4 * state) + action));
     } else if (new_i < 0 || new_i >= size_X || new_j < 0 || new_j >= size_X) {
-        printf("Warning: mouse left the map! Action: %d\n", action);
+        printf("Warning: mouse left the map! Action: %d, index: %d\n", action, index);
+        printf("QTable val: %f\n", *(QTable + (4 * state) + action));
     }
 
     int new_s = (new_i + new_j * size_X) + ((k + l * size_X) * graph_size) + ((m + n * size_X) * graph_size * graph_size);
@@ -210,8 +214,9 @@ int QLearn_action(double gr[max_graph_size][4], int mouse_pos[1][2], int cats[5]
     new_mouse_pos[0][0] = new_i;
     new_mouse_pos[0][1] = new_j;
     
-    double reward = QLearn_reward(gr, new_mouse_pos, cats, cheeses, size_X, graph_size)
-    QLearn_update(state, action, reward, s_new, QTable);
+    double reward = QLearn_reward(gr, new_mouse_pos, cats, cheeses, size_X, graph_size);
+    QLearn_update(state, action, reward, new_s, QTable);
+    
     return action;
 }
 
@@ -235,7 +240,28 @@ double QLearn_reward(double gr[max_graph_size][4], int mouse_pos[1][2], int cats
    * TO DO: Complete this function
    ***********************************************************************************************/ 
 
-  return(0);		// <--- of course, you will change this as well!     
+  /* The reward func below converges to 0.5-0.6 success rate from 20-50 rounds
+  int min_cat_dist = 10000;
+  for(int i = 0; i < 1; i++){
+    int mouse_dist = abs(cats[i][0]-mouse_pos[0][0]) + abs(cats[i][1]-mouse_pos[0][1]);
+    if (mouse_dist < min_cat_dist){
+      min_cat_dist = mouse_dist;
+    }
+  }
+  if (min_cat_dist == 0){
+      min_cat_dist -= 8 * size_X; 
+  }
+  int min_cheese_dist = 1000;
+  for(int i = 0; i < 1; i++){
+    int mouse_dist = abs(cheeses[i][0]-mouse_pos[0][0]) + abs(cheeses[i][1]-mouse_pos[0][1]);
+    if (mouse_dist < min_cheese_dist){
+      min_cheese_dist = mouse_dist;
+    }
+  }
+  //if (min_cheese_dist == 0){min_cheese_dist += size_X/2;}
+  int reward = 2*size_X - min_cheese_dist + min_cat_dist;
+  return(reward);			// <--- of course, you will change this as well!   
+  */  
 }
 
 void feat_QLearn_update(double gr[max_graph_size][4],double weights[25], double reward, int mouse_pos[1][2], int cats[5][2], int cheeses[5][2], int size_X, int graph_size)
