@@ -168,7 +168,7 @@ int QLearn_action(double gr[max_graph_size][4], int mouse_pos[1][2], int cats[5]
         action = 0;
         for (int a = 1; a < 4; a++) {
             double Qval = *(QTable + (4 * state) + a);
-            if ((Qval >= maxQ) && (gr[index][a] != 0) || (gr[index][action] == 0)) {
+            if ((Qval > maxQ) && (gr[index][a] != 0) || (gr[index][action] == 0)) {
                 maxQ = Qval;
                 action = a;
             }
@@ -240,7 +240,16 @@ double QLearn_reward(double gr[max_graph_size][4], int mouse_pos[1][2], int cats
    * TO DO: Complete this function
    ***********************************************************************************************/ 
 
-  /* The reward func below converges to 0.5-0.6 success rate from 20-50 rounds
+  /* The reward func below converges to 0.82-0.86 success rate from 20-50 rounds
+  // take number of moves into account
+  int index = mouse_pos[0][0] + mouse_pos[0][1]*size_X;
+  int possible_moves = 0;
+  for (int i = 0; i < 4; i++){
+    if (gr[index][i] != 0){
+      possible_moves++;
+    }
+  }
+  // take closest cat distance into account
   int min_cat_dist = 10000;
   for(int i = 0; i < 1; i++){
     int mouse_dist = abs(cats[i][0]-mouse_pos[0][0]) + abs(cats[i][1]-mouse_pos[0][1]);
@@ -249,8 +258,12 @@ double QLearn_reward(double gr[max_graph_size][4], int mouse_pos[1][2], int cats
     }
   }
   if (min_cat_dist == 0){
-      min_cat_dist -= 8 * size_X; 
+      min_cat_dist -= size_X * size_X; 
   }
+  if (min_cat_dist <= 1){
+      min_cat_dist -= size_X; 
+  }
+  //take into account closest cheese 
   int min_cheese_dist = 1000;
   for(int i = 0; i < 1; i++){
     int mouse_dist = abs(cheeses[i][0]-mouse_pos[0][0]) + abs(cheeses[i][1]-mouse_pos[0][1]);
@@ -258,10 +271,76 @@ double QLearn_reward(double gr[max_graph_size][4], int mouse_pos[1][2], int cats
       min_cheese_dist = mouse_dist;
     }
   }
-  //if (min_cheese_dist == 0){min_cheese_dist += size_X/2;}
-  int reward = 2*size_X - min_cheese_dist + min_cat_dist;
+  
+  int cat_to_cheese = abs(cats[0][0] - cheeses[0][0]) + abs(cats[0][1] - cheeses[0][1]);
+  if (min_cheese_dist == 0){min_cheese_dist -= size_X*size_X;}
+  if (min_cheese_dist <= 1){min_cheese_dist -= 4*size_X;}
+  int reward = - min_cheese_dist + min_cat_dist + possible_moves;
   return(reward);			// <--- of course, you will change this as well!   
   */  
+  /* The reward function below converges to 0.75-0.80 for 20-50 rounds
+  int min_cat_dist = 10000;
+  for(int i = 0; i < 1; i++){
+    int mouse_dist = abs(cats[i][0]-mouse_pos[0][0]) + abs(cats[i][1]-mouse_pos[0][1]);
+    if (mouse_dist < min_cat_dist){
+      min_cat_dist = mouse_dist;
+    }
+  }
+  if (min_cat_dist == 0){
+      min_cat_dist -= size_X * size_X * size_X; 
+  }
+  
+  int min_cheese_dist = 1000;
+  for(int i = 0; i < 1; i++){
+    int mouse_dist = abs(cheeses[i][0]-mouse_pos[0][0]) + abs(cheeses[i][1]-mouse_pos[0][1]);
+    if (mouse_dist < min_cheese_dist){
+      min_cheese_dist = mouse_dist;
+    }
+  }
+  
+  int cat_to_cheese = abs(cats[0][0] - cheeses[0][0]) + abs(cats[0][1] - cheeses[0][1]);
+  if (min_cheese_dist == 0){min_cheese_dist -= size_X*size_X;}
+  int reward = - min_cheese_dist + min_cat_dist;
+  return(reward);
+  */
+  // take number of moves into account
+  int index = mouse_pos[0][0] + mouse_pos[0][1]*size_X;
+  int possible_moves = 0;
+  for (int i = 0; i < 4; i++){
+    if (gr[index][i] != 0){
+      possible_moves++;
+    }
+  }
+  //take into account how "center" is the mouse
+  int dist_to_center = abs(mouse_pos[0][0] - (size_X/2)) + abs(mouse_pos[0][1] - (size_X/2));
+  // take closest cat distance into account
+  int min_cat_dist = 10000;
+  for(int i = 0; i < 1; i++){
+    int mouse_dist = abs(cats[i][0]-mouse_pos[0][0]) + abs(cats[i][1]-mouse_pos[0][1]);
+    if (mouse_dist < min_cat_dist){
+      min_cat_dist = mouse_dist;
+    }
+  }
+  if (min_cat_dist == 0){
+      min_cat_dist -= size_X * size_X * size_X; 
+  }
+  if (min_cat_dist <= 1){
+      min_cat_dist -= size_X; 
+  }
+  //take into account closest cheese 
+  int min_cheese_dist = 1000;
+  for(int i = 0; i < 1; i++){
+    int mouse_dist = abs(cheeses[i][0]-mouse_pos[0][0]) + abs(cheeses[i][1]-mouse_pos[0][1]);
+    if (mouse_dist < min_cheese_dist){
+      min_cheese_dist = mouse_dist;
+    }
+  }
+  
+  int cat_to_cheese = abs(cats[0][0] - cheeses[0][0]) + abs(cats[0][1] - cheeses[0][1]);
+  if (min_cheese_dist == 0){min_cheese_dist -= size_X*size_X;}
+  if (min_cheese_dist <= 1){min_cheese_dist -= 2*size_X;}
+  int reward = - min_cheese_dist + min_cat_dist + possible_moves - 0.2*dist_to_center;
+  return(reward);
 }
 
 void feat_QLearn_update(double gr[max_graph_size][4],double weights[25], double reward, int mouse_pos[1][2], int cats[5][2], int cheeses[5][2], int size_X, int graph_size)
