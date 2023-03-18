@@ -282,6 +282,7 @@ double QLearn_reward(double gr[max_graph_size][4], int mouse_pos[1][2], int cats
   if (min_cheese_dist == 0){min_cheese_dist -= size_X*size_X;}
   if (min_cheese_dist <= 1){min_cheese_dist -= 2*size_X;}
   int reward = - min_cheese_dist + min_cat_dist + possible_moves - 0.2*dist_to_center;
+	printf("reward: %d, %d, %d, %d\n", min_cheese_dist, min_cat_dist, possible_moves, dist_to_center);
   return(reward);
 }
 
