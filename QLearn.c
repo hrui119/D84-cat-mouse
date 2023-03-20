@@ -30,10 +30,6 @@
 */
 
 #include "QLearn.h"
-#include <stdio.h>
-#include <stdlib.h>
-
-
 
 void QLearn_update(int s, int a, double r, int s_new, double *QTable)
 {
@@ -282,7 +278,7 @@ double QLearn_reward(double gr[max_graph_size][4], int mouse_pos[1][2], int cats
   if (min_cheese_dist == 0){min_cheese_dist -= size_X*size_X;}
   if (min_cheese_dist <= 1){min_cheese_dist -= 2*size_X;}
   int reward = - min_cheese_dist + min_cat_dist + possible_moves - 0.2*dist_to_center;
-	printf("reward: %d, %d, %d, %d\n", min_cheese_dist, min_cat_dist, possible_moves, dist_to_center);
+  //printf("reward: %d, %d, %d, %d\n", min_cheese_dist, min_cat_dist, possible_moves, dist_to_center);
   return(reward);
 }
 
@@ -298,40 +294,17 @@ void feat_QLearn_update(double gr[max_graph_size][4],double weights[25], double 
     
     Your code must then evaluate the update and apply it to the weights in the weight array.
    */
-  // figure out action
-  //printf("called update\n");
-  double feat_orig[25], feat_after[25];
-  int found = 0;
+  double feat_orig[25], feat_after[25], maxU;
+  int new_pos[1][2], maxA;
   evaluateFeatures(gr, feat_orig, mouse_pos, cats, cheeses, size_X, graph_size);
-  //printf("%f, %f, mouse %d, cat %d\n", feat_orig[0], feat_orig[1], mouse_pos[0][0], cats[0][0]);
-
-  int curr_index = mouse_pos[0][0] + (mouse_pos[0][1] * size_X);
-  int new_pos[1][2];
-  for (int k = 0; k < 4; k++) {
-    if (gr[curr_index][k] == 0) {
-      continue;
-    }
-    position(mouse_pos, new_pos, k);
-    double r = QLearn_reward(gr, new_pos, cats, cheeses, size_X, graph_size);
-    printf("%d %d, %f, %f\n", new_pos[0][0], new_pos[0][1], reward, r);
-    if (reward == r) {
-      printf("here\n");
-      found = 1;
-      evaluateFeatures(gr, feat_after, new_pos, cats, cheeses, size_X, graph_size);
-      break;
-    }
-  }
-  printf("%d\n", found);
-  if (found == 0) {
-    return;
-  }
+  maxQsa(gr, weights, mouse_pos, cats, cheeses, size_X, graph_size, &maxU, &maxA);
+  position(mouse_pos, new_pos, maxA);
+  evaluateFeatures(gr, feat_after, new_pos, cats, cheeses, size_X, graph_size);
   for (int i = 0; i < numFeatures; i++) {
     double qs = Qsa(weights, feat_orig);
     double qs_aft = Qsa(weights, feat_after);
-    double res = (alpha * (reward + lambda * qs_aft - qs) * feat_orig[i]);
-    //printf("%f, %f, %f\n", res, qs_aft, qs);
+    double res = (alpha * (reward + (lambda * qs_aft) - qs) * feat_orig[i]);
     weights[i] += res;
-    //printf("weight: %f\n", weights[i]);
   }
 }
 
@@ -350,13 +323,12 @@ int feat_QLearn_action(double gr[max_graph_size][4],double weights[25], int mous
     As before, the mouse must never select an action that causes it to walk through walls or leave
     the maze.    
    */
-  //srand((unsigned) time(NULL));
   double c = ((double) rand()) / (double)((unsigned) RAND_MAX + 1);
   int curr_index = mouse_pos[0][0] + (mouse_pos[0][1] * size_X);
   int a;
   double maxU;
   int abc=0;
-  if (c <= pct) {
+  if (c > pct) {
     a = rand()%4;
     while (gr[curr_index][a] == 0) {
       a = rand()%4;
@@ -366,15 +338,6 @@ int feat_QLearn_action(double gr[max_graph_size][4],double weights[25], int mous
     // optimal action
     maxQsa(gr, weights, mouse_pos, cats, cheeses, size_X, graph_size, &maxU, &a);
     abc = 2;
-  }
-  
-  int new_pos[1][2];
-  position(mouse_pos, new_pos, a);
-  double reward = QLearn_reward(gr, new_pos, cats, cheeses, size_X, graph_size);
-  feat_QLearn_update(gr, weights, reward, mouse_pos, cats, cheeses, size_X, graph_size);
-  if (gr[curr_index][a] == 0) {
-    printf("Warning: mouse crossed a wall! Action: %d, index: %d, maxU: %f\n", a, curr_index, maxU);
-    printf("%f, %d\n", gr[curr_index][a], abc);
   }
   return a;
 }
@@ -394,19 +357,19 @@ void evaluateFeatures(double gr[max_graph_size][4],double features[25], int mous
    
    You can have up to 5 cats and up to 5 cheese chunks, and array entries for the remaining cats/cheese
    will have a value of -1 - check this when evaluating your features!
-
-   m distance to cat descending
-   m distance to cheese descending
   */
+  int cat_index=0, chee_index = 0;
+  int curr_index = mouse_pos[0][0] + (mouse_pos[0][1] * size_X);
   double count;
   for (int i = 0; i < 5; i++) {
     if (cats[i][0] != -1) {
       double d = (double)(abs(mouse_pos[0][0] - cats[i][0]) + abs(mouse_pos[0][1] - cats[i][1])) / size_X / 2;
-      //printf("cat dist %f\n", d);
       if (i == 0) {
         count = d;
+        cat_index = i;
       } else if (d < count){
         count = d;
+        cat_index = i;
       }
     }
   }
@@ -417,24 +380,88 @@ void evaluateFeatures(double gr[max_graph_size][4],double features[25], int mous
       double d = (double)(abs(mouse_pos[0][0] - cheeses[i][0]) + abs(mouse_pos[0][1] - cheeses[i][1])) / size_X / 2;
       if (i == 0) {
         count = d;
+        chee_index = i;
       } else if (d < count){
         count = d;
+        chee_index = i;
       }
     }
   }
   // min cheese dist
   features[1] = count;
-  count = 0;
-  int curr_index = mouse_pos[0][0] + (mouse_pos[0][1] * size_X);
-  for (int i=0; i<4; i++) {
-    if (gr[curr_index][i]!=0) {
-      count ++;
+  int ind = 2;
+  features[ind] = 0;
+  if (mouse_pos[0][0] - cats[cat_index][0] < 0 && gr[curr_index][1] == 0) {
+    features[ind] = 1;
+  } else if (mouse_pos[0][0] - cats[cat_index][0] > 0 && gr[curr_index][3] == 0) {
+    features[ind] = 1;
+  } else if (mouse_pos[0][1] - cats[cat_index][1] < 0 && gr[curr_index][2] == 0) {
+    features[ind] = 1;
+  } else if (mouse_pos[0][1] - cats[cat_index][1] > 0 && gr[curr_index][0] == 0) {
+    features[ind] = 1;
+  }
+  ind = 3;
+  features[ind] = 0;
+  if (mouse_pos[0][0] - cheeses[chee_index][0] < 0 && gr[curr_index][1] == 0) {
+    features[ind] = 1;
+  } else if (mouse_pos[0][0] - cheeses[chee_index][0] > 0 && gr[curr_index][3] == 0) {
+    features[ind] = 1;
+  } else if (mouse_pos[0][1] - cheeses[chee_index][1] < 0 && gr[curr_index][2] == 0) {
+    features[ind] = 1;
+  } else if (mouse_pos[0][1] - cheeses[chee_index][1] > 0 && gr[curr_index][0] == 0) {
+    features[ind] = 1;
+  }
+  double dist[5];
+  // cat dist descending
+  for (int i = 0; i < 5; i++) {
+    if (cats[i][0] != -1) {
+      double d = (double)(abs(mouse_pos[0][0] - cats[i][0]) + abs(mouse_pos[0][1] - cats[i][1])) / size_X / 2;
+      if (i == 0) {
+        dist[0] = d;
+      } else {
+        // insert
+        double temp = d, temp2;
+        for (int j = 0; j < i; j++) {
+          if (temp > dist[j]) {
+            temp2 = dist[j];
+            dist[j] = temp;
+            temp = dist[j+1];
+            dist[j+1] = temp2;
+          }
+        }
+      }
+    } else {
+      dist[i] = 0;
     }
   }
-  // possible moves
-  features[2] = (double)count/4.0;
-  // distance to centre
-  features[3] = (double)(abs(mouse_pos[0][0] - (size_X/2)) + abs(mouse_pos[0][1] - (size_X/2))) / size_X;
+  for (int i = 0; i < 5; i++) {
+    features[i+4] = dist[i];
+  }
+  // cheese dist desc
+  for (int i = 0; i < 5; i++) {
+    if (cheeses[i][0] != -1) {
+      double d = (double)(abs(mouse_pos[0][0] - cheeses[i][0]) + abs(mouse_pos[0][1] - cheeses[i][1])) / size_X / 2;
+      if (i == 0) {
+        dist[0] = d;
+      } else {
+        // insert
+        double temp = d, temp2;
+        for (int j = 0; j < i; j++) {
+          if (temp > dist[j]) {
+            temp2 = dist[j];
+            dist[j] = temp;
+            temp = dist[j+1];
+            dist[j+1] = temp2;
+          }
+        }
+      }
+    } else {
+      dist[i] = 0;
+    }
+  }
+  for (int i = 0; i < 5; i++) {
+    features[i+9] = dist[i];
+  }
 }
 
 double Qsa(double weights[25], double features[25])
@@ -507,57 +534,3 @@ void position(int mouse_pos[1][2], int new_pos[1][2], int a) {
     new_pos[0][1] = mouse_pos[0][1];
   }
 }
-
-/*
-double dist[5];
-  // cat dist descending
-  for (int i = 0; i < 5; i++) {
-    if (cats[i][0] != -1) {
-      double d = (abs(mouse_pos[0][0] - cats[i][0]) + abs(mouse_pos[0][1] - cats[i][1])) / size_X / 2;
-      if (i == 0) {
-        dist[0] = d;
-      } else {
-        // insert
-        double temp = d, temp2;
-        for (int j = 0; j < i; j++) {
-          if (temp > dist[j]) {
-            temp2 = dist[j];
-            dist[j] = temp;
-            temp = dist[j+1];
-            dist[j+1] = temp2;
-          }
-        }
-      }
-    } else {
-      dist[i] = 0;
-    }
-  }
-  for (int i = 0; i < 5; i++) {
-    features[i] = dist[i];
-  }
-  // cheese dist desc
-  for (int i = 0; i < 5; i++) {
-    if (cheeses[i][0] != -1) {
-      double d = (abs(mouse_pos[0][0] - cheeses[i][0]) + abs(mouse_pos[0][1] - cheeses[i][1])) / size_X / 2;
-      if (i == 0) {
-        dist[0] = d;
-      } else {
-        // insert
-        double temp = d, temp2;
-        for (int j = 0; j < i; j++) {
-          if (temp > dist[j]) {
-            temp2 = dist[j];
-            dist[j] = temp;
-            temp = dist[j+1];
-            dist[j+1] = temp2;
-          }
-        }
-      }
-    } else {
-      dist[i] = 0;
-    }
-  }
-  for (int i = 0; i < 5; i++) {
-    features[i+5] = dist[i];
-  }
-  */
