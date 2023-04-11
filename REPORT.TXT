@@ -1,6 +1,6 @@
 CSC D84 - Artificial Intelligence
 
-Assignment 3 - Reinforcement Learning - Q Learning
+Assignment 4 - Neural Networks for OCR
 
 ________________________________________________
 
@@ -24,7 +24,6 @@ of this assignment is my own.
 
 	Signed: _Haowen Rui__	_Andreas Alexander__
 
-
 (-5 marks for failing to provide the identifying
  information requested above)
 ________________________________________________
@@ -32,261 +31,144 @@ ________________________________________________
 Answer the following questions. Be concise and clear
 but explain carefully when needed.
 
-1 .- (1 mark) Explain your reward function. What game elements
-      are used, and why you think this is a good reward function
-      for this problem.
-      
-      We took into account the cat distance, cheese distance, number
-      of possible moves, and how "centered" is the mouse. The cat distance
-      gives incentive for the mouse to avoid the cat, the cheese distance 
-      is for the mouse to actually try to get the cheese (which is the 
-      point of the game). The number of possible moves increases the
-      chance of the mouse to escape the cat abd eat the cheese, and the
-      "center"ness factor also tells a little bit of how good the game 
-      state is because getting cornered will result in the mouse getting 
-      eaten to be more likely, and same thing with more possible moves.
+1 .- (1 marks) Train a 1-layer network using the Logistic activation
+               function. 
 
-2 .- These are multiple experiments (once you are sure your 
-     QLearning code is working!) 
+	       Copy/paste the reported classification rates for:
+	 	
+	       Training data (last training round): 
+		Digit 0, correct classification rate=0.945783
+		Digit 1, correct classification rate=0.965278
+		Digit 2, correct classification rate=0.811623
+		Digit 3, correct classification rate=0.851485
+		Digit 4, correct classification rate=0.902335
+		Digit 5, correct classification rate=0.772414
+		Digit 6, correct classification rate=0.906931
+		Digit 7, correct classification rate=0.883946
+		Digit 8, correct classification rate=0.791411
+		Digit 9, correct classification rate=0.831683
+		Average correct classification rate: 0.866289
+		Magnitude of largest network weight: 13.262426
 
-     * IMPORTANT! * For each training run, SAVE the Qtable
-     you will re-use the Qtables later.
+	       Testing data:
+		Digit 0, correct classification rate=0.967347
+		Digit 1, correct classification rate=0.965639
+		Digit 2, correct classification rate=0.818798
+		Digit 3, correct classification rate=0.869307
+		Digit 4, correct classification rate=0.873727
+		Digit 5, correct classification rate=0.775785
+		Digit 6, correct classification rate=0.932150
+		Digit 7, correct classification rate=0.887160
+		Digit 8, correct classification rate=0.818275
+		Digit 9, correct classification rate=0.835481
+		Average correct classification rate: 0.874367
 
-     (1 mark) # Experiment 1, 10000 training trials, 20 rounds, random seed 1522,
-     # 8x8 grid, cat-smartness .9
+2 .- (1 marks) Repeat the process using the hyperbolic tangent activation
+	       function.
+		Training data:
+		Digit 0, correct classification rate=0.946429
+		Digit 1, correct classification rate=0.989381
+		Digit 2, correct classification rate=0.812253
+		Digit 3, correct classification rate=0.846311
+		Digit 4, correct classification rate=0.893701
+		Digit 5, correct classification rate=0.754797
+		Digit 6, correct classification rate=0.925764
+		Digit 7, correct classification rate=0.885768
+		Digit 8, correct classification rate=0.777320
+		Digit 9, correct classification rate=0.799172
+		Average correct classification rate: 0.863090
+		Magnitude of largest network weight: 5.696394
 
-     Initial mouse winning rate (first rate obtained when training starts): 0.064547
+		Testing data:
+		Digit 0, correct classification rate=0.963265
+		Digit 1, correct classification rate=0.978855
+		Digit 2, correct classification rate=0.797481
+		Digit 3, correct classification rate=0.852475
+		Digit 4, correct classification rate=0.928717
+		Digit 5, correct classification rate=0.720852
+		Digit 6, correct classification rate=0.896660
+		Digit 7, correct classification rate=0.883268
+		Digit 8, correct classification rate=0.750513
+		Digit 9, correct classification rate=0.700694
+		Average correct classification rate: 0.847278
+		
+3 .- (1 marks) Which type of activation function yielded the best classification
+	       results? which one learned faster?
+		For testing results, logistic got better results, but hyperbolic
+		tangent learns faster. 
 
-     Train your mouse, and once trained, run the evaluation and  
-     record the mouse winning rate: 0.701793 (average success rate)
+4 .- (1 marks) Train a 2-layer network with hyperbolic-tangent activation, using
+	       150 hidden units. Report the classification rates on training and
+	       testing data just as for 1) and 2).	       
+	       
+5 .- (1 marks) Same as 4), except use 10 hidden units instead
 
-     (1 mark) # Experiment 2, 1000000 training trials, 50 rounds, random seed 1522,
-     # 8x8 grid, cat-smartness .9
+6 .- (1 marks) Same as 5), except use 3 hidden units instead
 
-     Initial mouse winning rate (first rate obtained when training starts): 0.064525
+7 .- (3 marks) Comment on the experiments in 4, 5, and 6, and give your conclusion
+	       regarding the effect of the number of hidden units on classification
+	       accuracy. 
 
-     Train your mouse, and once trained, run the evaluation and  
-     record the mouse winning rate: 0.870055 (average success rate)
+	       What is the network with 3 hidden telling you about this classification
+	       problem?
 
-     (1 mark) Would the mouse keep improving and become invincible if
-     you ran, say, 100,000,000 training rounds per batch?    
-     
-     It will only keep improving to some point of convergence, where it cannot get
-     any better than that for our particular implementation.  
+8 .- (3 marks) Train the best performing network you can. Use any activation function
+	       you wish, and set the number of hidden units so as to achieve the best
+	       performance.
 
-4 .- Using the QTable saved from Experiment 2 (NO re-training!)
+	       Number of hidden units used:
 
-     (1 mark) # Experiment 3 - Run the evaluation on the 8x8 grid, cat-smartness=.9,
-     # but using the random seed 4289 for the game.
-	
-     Mouse Winning Rate: 0.490710 (avg success rate)
+	       Classification rate on testing data:
 
-     (1 mark) # Experiment 4 - Run the evaluation on the 8x8 grid, cat-smartness=.9,
-     # but using the random seed 31415 for the game.
-	
-     Mouse Winning Rate: 0.550624 (avg success rate) 
+9 .- (3 marks) Describe how you would build a network to play the cat
+	        and mouse game (move the mouse to help it survive).
 
-     Average rate for Experiement 3 and Experiment 4: 0.520667 
-
-     (1 mark) Compare with the rate obtained in experiment 2. What is happening here?
-     
-     We are using the QTable from the training done in experiment 2, from a different 
-     random seed. These results show that the QTable that we get at the end of each 
-     training is mostly useful to the particular seed we got it from, and not so well
-     on other seeds. 
-
-5 .- Understanding the effects of state space on learning ability:
-
-     (1 mark) # Experiment 5 - Train your mouse on the 16x16 grid, using random seed
-     # 1522, 1000000 trials, and 50 training rounds. Cat-smartness=.9
-
-     Initial mouse winning rate (first rate obtained when training starts): 0.030324
-
-     Mouse Winning Rate (from evaluation after training): 0.721532
-
-     (1 mark) Compare the final winning rate with that from Experiment 2, what can
-     you say about the difference in winning rates?
-     
-     It is not as good as the result from Experiment 2, since with a larger state space,
-     there would be more to explore, and with the same training method, it would be
-     expected to get a worse result compared to a smaller state space. There would be 
-     less exploration done and therefore less learning done as well, which is reflected
-     in the worse success rate from the result we got.
-
-6 .- (2 marks) Is standard Q-Learning a rasonable strategy for environments
-     that change constantly? discuss based on the above
-     
-     It is not. As we see from the various experiments, a change in the random seed
-     would cause a particular result from another seed to not perform as well. So a change
-     in the environment is not suitable for standard Q-learning, as we would need to 
-     restart the learning process for a particular environment before we can get a good result.
-     When the map changes (random seed) or the state space grew larger, the QTable we got from
-     a different environment would not do as well, so Q-Learning is not a reasonable strategy
-     for constantly changing environments.
-
-7 .- (2 marks) Explain your feature set for feature-based Q Learning, and
-               explain why and how each feature is expected to contribute
-	          to helping your mouse win
-
-               the first feature that we included is the minimum manhattan distance to a cat, 
-               this feature is significant because it directly deals with the survival 
-               of the mouse, the closer the cat is, the more dangerous. 
-
-               the second feature is the minimum manhattan distance to the cheese, this is 
-               significant because we have to know where the cheese is in order for 
-               the mice to go to the cheese. 
-
-               the third feature is whether there is a wall between the closest cat and the mouse, 
-               this is important because if there is a wall between the two, then the mouse is 
-               relatively safe, because the cat has to loop around to get close to the mouse. 
-
-               the fourth feature is whetehr there is a wall between the closest cheese and the mouse, 
-               similarly, if the mouse and the cheese are separated, even though they might be right 
-               beside each other, but they still can't get to each other without looping around the wall. 
-
-               the 5th to 14th features are distances to the cats and cheeses sorted in decreasing order. 
-               this information could be useful because the mouse can know not only the closest cats or cheese, 
-               but also the directions of the other cats. 
-
-               we tried adding a couple other features such as distance to centre, and possible moves the 
-               mouse has. But we found that all of these features complicate the model and decreased 
-               performance. 
-
-8 .- Carry out the following experiments:
-
-     (1 mark) # Experiment 6: Train your mouse using feature-based Q-Learning, on
-     # the 16x16 grid, one cat, and one cheese, cat-smartness=.9,  
-     # random seed = 1522, and use 1000000 trials and 50 rounds. 
-
-     Initial mouse winning rate (first rate obtained when training starts): 0.030348
-     
-     Mouse Winning Rate (from evaluation after training): 0.205176
-
-     Compare this rate against the rate obtained in Experiment #5, what
-     are your conclusions regarding the utility of feature-based
-     Q-Learning?
-
-     feature based Q-learning may be harder to tune, it requires a complicated set of 
-     features in order to actually do good in performance. the process to come up with 
-     a list of features is difficult because not every feature is helpful to the entire
-     model, and we can only determine which feature is useful by test and trials. 
-
-     (1 mark) # Experiment 7, using the saved weights from Experiment 6 (no
-     # re-training) run the evaluation using random seed 4289, same
-     # 1 cheese, 1 cat, and cat-smartness=.9, 16x16 grid
-
-     Mouse Winning Rate (from evaluation after training): 0.272631
-
-     (1 mark) # Experiment 8, using the saved weights from Experiment 6 (no
-     # re-training) run the evaluation using random seed 31415, same
-     # 1 cheese, 1 cat, and cat-smartness=.9, 16x16 grid
-
-     Mouse Winning Rate (from evaluation after training): 0.292708
-
-     (1 mark) Comparing the winning rates from Experiments #7 and #8 against
-     those from Experiment #6, what can you conclude about feature-
-     based Q-Learning in terms of its ability to deal with changes 
-     to the environment?
-
-     feature based q learning performs much better under changing environments, the winning rate 
-     not only didn't decrease, it increased twice on the two different maps. I believe this is 
-     due to the fact that the model evaluates its current senario by how much importance each feature
-     contributes to the expected reward that the model receives, thus, is more flexible than a qtable. 
-     
-9 .- Carry out the following experiments:
-
-     (1 mark) # Experiment 9: Train your mouse using feature-based Q-Learning, on
-     # the 16x16 grid, 2 cats, and 3 cheeses, cat-smartness=.9,  
-     # random seed = 1522, and use 1000000 trials and 50 rounds. 
-
-     Initial mouse winning rate (first rate obtained when training starts): 0.085190
-     
-     Mouse Winning Rate (from evaluation after training): 0.644188
-  
-     (1 mark) # Experiment 9: Using the trained weights from Experiment 9, (no
-     # re-training), run the evaluation on the 16x16 grid, 2 cats, 
-     # 3 cheeses, cat-smartness=.9, and random seed 4289
-     
-     Mouse Winning Rate (from evaluation after training): 0.621283
-
-     (1 mark) # Experiment 9: Using the trained weights from Experiment 9, (no
-     # re-training), run the evaluation on the 32x32 grid, 2 cats, 
-     # 3 cheeses, cat-smartness=.9, and random seed 4289
-     
-     Mouse Winning Rate (from evaluation after training): 0.238252
-
-     (2 marks) Based on the last 3 experiments, what can you conclude regarding
-     the usefulness and applicability of standard Q-Learning vs. 
-     feature-based Q-learning?
-
-     we conclude that feature based q-learning heavily depends on a good set of 
-     features in order to produce good results. whereas Q-learning depends on a 
-     qtable such that its size increases exponentially the more variables we add 
-     to the model. overall, feature based q-learning is more useful and applicable 
-     when building a model in real life because it is much more scalable than 
-     standard q-learning. feature based q-learning also adapt to changing environments 
-     better, thus it will produce better results in real life. 
-
-10 . - (2 marks) We obviously can not train an expensive robot by trial and error,
-      How would you implement feature-based Q-learning for a mobile bot so you
-      can take advantage of reinforcement learning but not spend millions on
-      broken robots that keep falling down the stairs?
-      
-      we can build a good simulation environment where the robot can get realistic 
-      real life feedbacks to the actions that it performs. this way, we can save 
-      millions of dollars by simulating and training the robot software inside the 
-      virtual simulation environment and not risk any hardware damage. 
-      
+		- Describe what the input is in terms of a vector of
+		  values
+		- Describe what the output layer looks like (how many
+		  neurons and what they encode)
+		- Describe the error function
+		- How many layers should you use?
 _____________________________________________________
 
 Mark with an 'x' where appropriate. If something is only
 working partially, briefly describe what works, what
 doesn't work, or what problems exist.
 	
-			Complete/Working	Partial		Not done
+        	Complete/Working	Partial		Not done
 
-QLearn 				x
- update
-
-Reward				x
- function
-
-Decide				x
- action
-
-featureEval			x
-
-evaluateQsa			x
-
-maxQsa_prime			x
-
-Qlearn_features		x
+Logistic
+ activation		x
+ 
+Tanh
+ activation		x	
 	
-decideAction_features	x
+1L Feed-forward		x  
 
+1L Backprop		x
+
+1L Classify		x
+
+2L Feed-forward
+
+2L Backprop
+
+2L Classify
 _____________________________________________________
 
 Marking:
 
-(5 marks) Implemented QLearn update.
+(10) one-layer, logistic network trains and classifies
 
-(3 marks) Implemented a reasonable reward function
+(5)  one-layer, tanh network trains and classifies
 
-(3 marks)  Implemented the function that chooses the
-           optimal action based on Qtable and
-           maze
+(15) two-layer, tanh network trains and classifies
 
-(10 marks) Implemented a non-trivial, good feature set
-	   and evaluation function
+(5) two-layer, logistic network trains and classifies
 
-(5 marks) Implemented a working feature-based Q-learning
-	   algorithm
+(5 marks) Can train 2-layer networks with either activation function
+	  and any number of hidden units
 
-(10 marks) Competitive mouse performance
+(12 marks) Answers in this report
 
-(24 marks) Answers in this report file
-
-(- marks)  Penalty marks
-
-Total for A3:       / out of 60
-
+Total for A4:       / out of 52
