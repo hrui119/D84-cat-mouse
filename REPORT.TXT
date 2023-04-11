@@ -101,35 +101,107 @@ but explain carefully when needed.
 	       150 hidden units. Report the classification rates on training and
 	       testing data just as for 1) and 2).
 	       
-	       Training data (last training round): 
-		
+	        Training data (last training round): 
+			Digit 0, correct classification rate=0.959839
+			Digit 1, correct classification rate=0.975694
+			Digit 2, correct classification rate=0.869739
+			Digit 3, correct classification rate=0.867327
+			Digit 4, correct classification rate=0.921444
+			Digit 5, correct classification rate=0.843678
+			Digit 6, correct classification rate=0.910891
+			Digit 7, correct classification rate=0.920696
+			Digit 8, correct classification rate=0.844581
+			Digit 9, correct classification rate=0.895050
+			Average correct classification rate: 0.900894
+			Largest hidden to output weight: 22.798850
+			Largest input to hidden weight: 22.434333
+			Training done!
 	       
-	       Testing data: 
-	       
+	        Testing data: 
+	        Digit 0, correct classification rate=0.984694
+			Digit 1, correct classification rate=0.977974
+			Digit 2, correct classification rate=0.873062
+			Digit 3, correct classification rate=0.911881
+			Digit 4, correct classification rate=0.919552
+			Digit 5, correct classification rate=0.835202
+			Digit 6, correct classification rate=0.946764
+			Digit 7, correct classification rate=0.897860
+			Digit 8, correct classification rate=0.854209
+			Digit 9, correct classification rate=0.905847
+			Average correct classification rate: 0.910705
 	       
 5 .- (1 marks) Same as 4), except use 10 hidden units instead
 
-		Training data (last training round): 
-		
+			Training data (last training round): 
+			Digit 0, correct classification rate=0.953347
+			Digit 1, correct classification rate=0.957875
+			Digit 2, correct classification rate=0.754839
+			Digit 3, correct classification rate=0.836401
+			Digit 4, correct classification rate=0.884536
+			Digit 5, correct classification rate=0.696507
+			Digit 6, correct classification rate=0.924843
+			Digit 7, correct classification rate=0.875850
+			Digit 8, correct classification rate=0.721495
+			Digit 9, correct classification rate=0.688312
+			Average correct classification rate: 0.829401
+			Largest hidden to output weight: 2.484600
+			Largest input to hidden weight: 0.911335
+			Training done!
 	       
 	        Testing data: 
-		
+			Digit 0, correct classification rate=0.965306
+			Digit 1, correct classification rate=0.977093
+			Digit 2, correct classification rate=0.773256
+			Digit 3, correct classification rate=0.834653
+			Digit 4, correct classification rate=0.905295
+			Digit 5, correct classification rate=0.741031
+			Digit 6, correct classification rate=0.911273
+			Digit 7, correct classification rate=0.887160
+			Digit 8, correct classification rate=0.734086
+			Digit 9, correct classification rate=0.747275
+			Average correct classification rate: 0.847643
 
 6 .- (1 marks) Same as 5), except use 3 hidden units instead
 
-		Training data (last training round): 
-		
+			Training data (last training round): 
+			Digit 0, correct classification rate=0.987830
+			Digit 1, correct classification rate=0.992933
+			Digit 2, correct classification rate=0.000000
+			Digit 3, correct classification rate=0.000000
+			Digit 4, correct classification rate=0.000000
+			Digit 5, correct classification rate=0.000000
+			Digit 6, correct classification rate=0.000000
+			Digit 7, correct classification rate=0.927593
+			Digit 8, correct classification rate=0.000000
+			Digit 9, correct classification rate=0.000000
+			Average correct classification rate: 0.290836
+			Largest hidden to output weight: 1.233658
+			Largest input to hidden weight: 0.511934
+			Training done!
 	       
 	        Testing data: 
-		
+			Digit 0, correct classification rate=0.994898
+			Digit 1, correct classification rate=0.996476
+			Digit 2, correct classification rate=0.000000
+			Digit 3, correct classification rate=0.000000
+			Digit 4, correct classification rate=0.000000
+			Digit 5, correct classification rate=0.000000
+			Digit 6, correct classification rate=0.018789
+			Digit 7, correct classification rate=0.888132
+			Digit 8, correct classification rate=0.000000
+			Digit 9, correct classification rate=0.003964
+			Average correct classification rate: 0.290226
 
 7 .- (3 marks) Comment on the experiments in 4, 5, and 6, and give your conclusion
 	       regarding the effect of the number of hidden units on classification
 	       accuracy. 
 	       What is the network with 3 hidden telling you about this classification
 	       problem?
-	       increasing the number of neurons does increase the accuracy of the model 
-	       but only up to a point. In our experiments, 
+	       Increasing the number of neurons does increase the accuracy of the model 
+	       but only up to a point. The accuracy in experiment 4 didn't increase 
+		   significantly compared to experiment 5, but results from experiment 5 
+		   did increase a lot compared to experiment 6. 
+
 	       When there's too few neurons in the hidden layers, there may not be enough 
 	       intermediate features generated to guide the neurons after it, thus 
 	       decreasing the model's accuracy. 
@@ -137,9 +209,9 @@ but explain carefully when needed.
 8 .- (3 marks) Train the best performing network you can. Use any activation function
 	       you wish, and set the number of hidden units so as to achieve the best
 	       performance.
-		Activation function: 
-	        Number of hidden units used: 
-	        Classification rate on testing data:
+			Activation function: hyperbolic-tangent activation
+	        Number of hidden units used: 150
+	        Classification rate on testing data: 0.910705
 
 9 .- (3 marks) Describe how you would build a network to play the cat
 	        and mouse game (move the mouse to help it survive).
