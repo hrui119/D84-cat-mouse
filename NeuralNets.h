@@ -30,7 +30,7 @@
 #define OUTPUTS 10			// Output classes
 #define MAX_HIDDEN 785			// Maximum number of hidden units
 #define ALPHA .01			// Network learning rate
-#define SIGMOID_SCALE .01		// Scaling factor for sigmoid function input <--- MIND THIS!
+#define SIGMOID_SCALE .025		// Scaling factor for sigmoid function input <--- MIND THIS!
 
 // Function prototypes for D84 - Unit 4 - Neural Nets
 int train_1layer_net(double sample[INPUTS],int label,double (*sigmoid)(double input), double weights_io[INPUTS][OUTPUTS]);
