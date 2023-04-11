@@ -99,36 +99,77 @@ but explain carefully when needed.
 
 4 .- (1 marks) Train a 2-layer network with hyperbolic-tangent activation, using
 	       150 hidden units. Report the classification rates on training and
-	       testing data just as for 1) and 2).	       
+	       testing data just as for 1) and 2).
+	       
+	       Training data (last training round): 
+		
+	       
+	       Testing data: 
+	       
 	       
 5 .- (1 marks) Same as 4), except use 10 hidden units instead
 
+		Training data (last training round): 
+		
+	       
+	        Testing data: 
+		
+
 6 .- (1 marks) Same as 5), except use 3 hidden units instead
+
+		Training data (last training round): 
+		
+	       
+	        Testing data: 
+		
 
 7 .- (3 marks) Comment on the experiments in 4, 5, and 6, and give your conclusion
 	       regarding the effect of the number of hidden units on classification
 	       accuracy. 
-
 	       What is the network with 3 hidden telling you about this classification
 	       problem?
+	       increasing the number of neurons does increase the accuracy of the model 
+	       but only up to a point. In our experiments, 
+	       When there's too few neurons in the hidden layers, there may not be enough 
+	       intermediate features generated to guide the neurons after it, thus 
+	       decreasing the model's accuracy. 
 
 8 .- (3 marks) Train the best performing network you can. Use any activation function
 	       you wish, and set the number of hidden units so as to achieve the best
 	       performance.
-
-	       Number of hidden units used:
-
-	       Classification rate on testing data:
+		Activation function: 
+	        Number of hidden units used: 
+	        Classification rate on testing data:
 
 9 .- (3 marks) Describe how you would build a network to play the cat
 	        and mouse game (move the mouse to help it survive).
 
 		- Describe what the input is in terms of a vector of
 		  values
+		  The input to the neural network would be the current state of the game, 
+		  which would include the positions of the cat, the mouse, and the cheese 
+		  on the grid, as well as the walls and other obstacles on the grid.
+		  
 		- Describe what the output layer looks like (how many
 		  neurons and what they encode)
+		  the output layer will have 4 neurons, each represents a movement of up, 
+		  right, down, and left. The values of the output neurons would be between 
+		  0 and 1 and would represent the probability of moving in each direction. 
+		  The highest probability would be selected as the direction of movement 
+		  for the mouse.
+		  
 		- Describe the error function
+		  The error function for this neural network could be the mean squared 
+		  error between the predicted output of the neural network and the best 
+		  movement for the mouse determined either by Dijkstra's algo or a heuristic 
+		  function. This error would be calculated over a batch of game states and 
+		  movements to update every weight in the neural network. 
+		  
 		- How many layers should you use?
+		  The number of layers to use would depend on the smartness of the cat and 
+		  the size of the dataset. A neural network with two or three hidden layers 
+		  with around a hundred neurons per layer should be sufficient for the number 
+		  of possible states and the features we need to generate for this task. 
 _____________________________________________________
 
 Mark with an 'x' where appropriate. If something is only
@@ -149,11 +190,11 @@ Tanh
 
 1L Classify		x
 
-2L Feed-forward
+2L Feed-forward		x
 
-2L Backprop
+2L Backprop		x
 
-2L Classify
+2L Classify		x
 _____________________________________________________
 
 Marking:
