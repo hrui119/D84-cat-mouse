@@ -76,14 +76,17 @@ int train_1layer_net(double sample[INPUTS],int label,double (*sigmoid)(double in
   backprop_1layer(sample, activations, sigmoid, label, weights_io);
 
   // Return the class that the network has chosen for this training sample
+  /*
   double max_activation = -INFINITY;
   int predicted_class = -1;
   for (int i = 0; i < OUTPUTS; i++) {
-    if (activations[i] > max_activation) {
+    if (activations[i] >= max_activation) {
       max_activation = activations[i];
       predicted_class = i;
     }
   }
+  */
+  int predicted_class = classify_1layer(sample, label, sigmoid, weights_io);
   return predicted_class;		// <--- This should return the class for this sample
 }
 
@@ -166,9 +169,16 @@ void feedforward_1layer(double sample[785], double (*sigmoid)(double input), dou
         activations[j] = sigmoid(scaled_input);
     }
 }
+
 double sigmoid_deriv(double (*sigmoid)(double input), double x){
-  return sigmoid(x) * (1 - sigmoid(x));
+  if(sigmoid(0) == 0){
+    return 1.0 - pow(sigmoid(x), 2);
+  }
+  else{
+    return sigmoid(x) * (1 - sigmoid(x));
+  }
 }
+
 void backprop_1layer(double sample[INPUTS], double activations[OUTPUTS], double (*sigmoid)(double input), int label, double weights_io[INPUTS][OUTPUTS])
 {
   /*
